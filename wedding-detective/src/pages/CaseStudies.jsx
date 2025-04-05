@@ -28,7 +28,7 @@ const CaseStudies = () => {
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-8">
                   <div className="aspect-square bg-darkGray rounded-lg flex items-center justify-center">
                     <svg className="w-24 h-24 text-accent/30" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd"></path>
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 5 0 0010 11z" clipRule="evenodd"></path>
                     </svg>
                   </div>
                   <div className="mt-4">
@@ -36,45 +36,50 @@ const CaseStudies = () => {
                     <ul className="mt-2 space-y-2 text-light/70 text-sm">
                       <li className="flex items-center">
                         <span className="w-24">Client:</span>
-                        <span>Female, 32</span>
+                        <span>Female, 27</span>
                       </li>
                       <li className="flex items-center">
                         <span className="w-24">Subject:</span>
-                        <span>Male, 35</span>
+                        <span>Male, 33</span>
                       </li>
                       <li className="flex items-center">
                         <span className="w-24">Relationship:</span>
-                        <span>Engaged, 1 year</span>
+                        <span>Arranged Marriage Process</span>
                       </li>
                       <li className="flex items-center">
                         <span className="w-24">Package:</span>
-                        <span>Comprehensive</span>
+                        <span>Cultural Background Check</span>
                       </li>
                     </ul>
                   </div>
                 </div>
                 
                 <div className="md:w-2/3">
-                  <h4 className="text-xl font-bold text-accent mb-4">The Hidden Financial Deception</h4>
+                  <h4 className="text-xl font-bold text-accent mb-4">The Biodata Deception</h4>
                   <div className="space-y-4 text-light/80">
-                    <p>Our client was engaged to a successful entrepreneur who claimed to run multiple profitable businesses. With a lavish lifestyle and expensive gifts, there were no obvious red flags. However, the client noticed inconsistencies in stories about business trips and meetings.</p>
+                    <p>Priya's parents contacted our agency in December 2024 after their daughter expressed subtle concerns about her potential match. At 27, Priya had completed her MBA from a prestigious institute and was working with a multinational corporation in Mumbai. Her family had received a marriage proposal from Vikram, a 33-year-old software engineer reportedly working for a well-known tech company in Bangalore. His biodata, shared through a respected family matchmaker, presented an impressive profile – an IIT Delhi graduate with a master's from a foreign university, stable employment history with a substantial salary, and significant family property in Delhi's upscale neighborhoods.</p>
+                    
+                    <p>"During our first family meeting at Taj West End, everything seemed perfect," Priya's father told our consultant. "But when my daughter spoke with him privately about technical matters related to his claimed specialization, his answers seemed rehearsed and superficial." The family had already progressed to the pre-engagement discussion stage when Priya noticed Vikram's reluctance to introduce certain family members and inconsistencies in stories about his educational experiences.</p>
                     
                     <div className="bg-secondary p-4 rounded-lg border-l-4 border-accent">
                       <h5 className="font-bold text-light mb-2">Investigation Findings</h5>
                       <ul className="list-disc pl-5 space-y-1 text-light/70">
-                        <li>Subject had no registered businesses in his name</li>
-                        <li>Significant undisclosed debt exceeding $300,000</li>
-                        <li>Multiple maxed-out credit cards under different names</li>
-                        <li>Rental luxury cars presented as owned vehicles</li>
-                        <li>Pattern of "borrowing" money from previous partners</li>
+                        <li>Verification with IIT Delhi alumni network confirmed Vikram had attended only a three-month certificate course, not the four-year degree program claimed</li>
+                        <li>LinkedIn profile analysis revealed six job changes in four years, with tenures averaging only 7 months per position</li>
+                        <li>Professional contacts confirmed actual salary was approximately 40% less than represented</li>
+                        <li>Property documents provided for verification showed manipulation with digital alterations to ownership percentages</li>
+                        <li>Discreet inquiries with local associates uncovered significant gambling debts at several establishments in Bangalore and Goa</li>
+                        <li>Background check revealed a previously broken engagement with another family from Chennai that was concealed during discussions</li>
                       </ul>
                     </div>
                     
-                    <p>Our investigation revealed that the subject had created an elaborate facade of wealth while accumulating massive debt. The client was able to confront the subject with evidence, leading to the subject's confession and the termination of the engagement before any financial entanglement occurred.</p>
+                    <p>Our Delhi and Bangalore teams worked meticulously through a network of local contacts to verify Vikram's credentials. Our education verification specialist discovered he had been dismissed from a postgraduate program abroad due to academic violations but continued to use the university's name in his resume. More concerning was our financial analyst's discovery that Vikram had borrowed substantial sums from relatives to maintain appearances during the marriage discussions.</p>
+                    
+                    <p>"What was particularly troubling," noted our lead investigator, "was finding evidence of similar patterns with three other marriage proposals simultaneously in progress with families in Chennai, Hyderabad, and Delhi. In each case, he had adjusted his biodata to match the specific expectations of each family, creating essentially different personas."</p>
                     
                     <div className="bg-accent/10 p-4 rounded-lg">
                       <h5 className="font-bold text-accent mb-2">Client Outcome</h5>
-                      <p className="text-light/80">The client avoided a potentially devastating financial situation and emotional trauma. Our discreet investigation provided actionable evidence without the subject ever knowing an investigation had taken place.</p>
+                      <p className="text-light/80">We presented our findings confidentially to Priya's parents in a private meeting with detailed documentation. Following cultural sensitivity protocols, we developed a face-saving exit strategy that allowed the family to withdraw from proceedings citing an unexpected family commitment that would delay marriage plans indefinitely. "In arranged marriage contexts, preserving family reputation is paramount," explained Priya's father afterward. "Your team's cultural understanding allowed us to exit this situation without embarrassment to either family." The matchmaker was privately informed of the situation to prevent similar matches being proposed to other families. Three months later, Priya's family contacted us again – this time with a new match they wished to verify before proceeding, which our investigation confirmed as genuine.</p>
                     </div>
                   </div>
                 </div>
@@ -91,7 +96,7 @@ const CaseStudies = () => {
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-8">
                   <div className="aspect-square bg-darkGray rounded-lg flex items-center justify-center">
                     <svg className="w-24 h-24 text-accent/30" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd"></path>
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 5 0 0010 11z" clipRule="evenodd"></path>
                     </svg>
                   </div>
                   <div className="mt-4">
@@ -154,7 +159,7 @@ const CaseStudies = () => {
                 <div className="md:w-1/3 mb-6 md:mb-0 md:pr-8">
                   <div className="aspect-square bg-darkGray rounded-lg flex items-center justify-center">
                     <svg className="w-24 h-24 text-accent/30" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd"></path>
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 5 0 0010 11z" clipRule="evenodd"></path>
                     </svg>
                   </div>
                   <div className="mt-4">
@@ -201,6 +206,74 @@ const CaseStudies = () => {
                     <div className="bg-accent/10 p-4 rounded-lg">
                       <h5 className="font-bold text-accent mb-2">Client Outcome</h5>
                       <p className="text-light/80">The client was able to confront the subject with irrefutable evidence, ending the relationship before the wedding. Our team provided emotional support resources and helped secure the return of shared assets. The client later reported this intervention saved them from what would have been a devastating discovery after marriage.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Indian Case Study */}
+            <div className="card p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24">
+                <div className="absolute transform rotate-45 bg-accent text-primary text-xs font-bold py-1 px-6 right-[-24px] top-[32px]">VERIFIED</div>
+              </div>
+              
+              <div className="md:flex">
+                <div className="md:w-1/3 mb-6 md:mb-0 md:pr-8">
+                  <div className="aspect-square bg-darkGray rounded-lg flex items-center justify-center">
+                    <svg className="w-24 h-24 text-accent/30" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 5 0 0010 11z" clipRule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <div className="mt-4">
+                    <h4 className="text-accent font-bold">Case Details</h4>
+                    <ul className="mt-2 space-y-2 text-light/70 text-sm">
+                      <li className="flex items-center">
+                        <span className="w-24">Client:</span>
+                        <span>Female, 27</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-24">Subject:</span>
+                        <span>Male, 33</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-24">Relationship:</span>
+                        <span>Arranged Marriage Process</span>
+                      </li>
+                      <li className="flex items-center">
+                        <span className="w-24">Package:</span>
+                        <span>Cultural Background Check</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="md:w-2/3">
+                  <h4 className="text-xl font-bold text-accent mb-4">The Biodata Deception</h4>
+                  <div className="space-y-4 text-light/80">
+                    <p>Priya's parents contacted our agency in December 2024 after their daughter expressed subtle concerns about her potential match. At 27, Priya had completed her MBA from a prestigious institute and was working with a multinational corporation in Mumbai. Her family had received a marriage proposal from Vikram, a 33-year-old software engineer reportedly working for a well-known tech company in Bangalore. His biodata, shared through a respected family matchmaker, presented an impressive profile – an IIT Delhi graduate with a master's from a foreign university, stable employment history with a substantial salary, and significant family property in Delhi's upscale neighborhoods.</p>
+                    
+                    <p>"During our first family meeting at Taj West End, everything seemed perfect," Priya's father told our consultant. "But when my daughter spoke with him privately about technical matters related to his claimed specialization, his answers seemed rehearsed and superficial." The family had already progressed to the pre-engagement discussion stage when Priya noticed Vikram's reluctance to introduce certain family members and inconsistencies in stories about his educational experiences.</p>
+                    
+                    <div className="bg-secondary p-4 rounded-lg border-l-4 border-accent">
+                      <h5 className="font-bold text-light mb-2">Investigation Findings</h5>
+                      <ul className="list-disc pl-5 space-y-1 text-light/70">
+                        <li>Verification with IIT Delhi alumni network confirmed Vikram had attended only a three-month certificate course, not the four-year degree program claimed</li>
+                        <li>LinkedIn profile analysis revealed six job changes in four years, with tenures averaging only 7 months per position</li>
+                        <li>Professional contacts confirmed actual salary was approximately 40% less than represented</li>
+                        <li>Property documents provided for verification showed manipulation with digital alterations to ownership percentages</li>
+                        <li>Discreet inquiries with local associates uncovered significant gambling debts at several establishments in Bangalore and Goa</li>
+                        <li>Background check revealed a previously broken engagement with another family from Chennai that was concealed during discussions</li>
+                      </ul>
+                    </div>
+                    
+                    <p>Our Delhi and Bangalore teams worked meticulously through a network of local contacts to verify Vikram's credentials. Our education verification specialist discovered he had been dismissed from a postgraduate program abroad due to academic violations but continued to use the university's name in his resume. More concerning was our financial analyst's discovery that Vikram had borrowed substantial sums from relatives to maintain appearances during the marriage discussions.</p>
+                    
+                    <p>"What was particularly troubling," noted our lead investigator, "was finding evidence of similar patterns with three other marriage proposals simultaneously in progress with families in Chennai, Hyderabad, and Delhi. In each case, he had adjusted his biodata to match the specific expectations of each family, creating essentially different personas."</p>
+                    
+                    <div className="bg-accent/10 p-4 rounded-lg">
+                      <h5 className="font-bold text-accent mb-2">Client Outcome</h5>
+                      <p className="text-light/80">We presented our findings confidentially to Priya's parents in a private meeting with detailed documentation. Following cultural sensitivity protocols, we developed a face-saving exit strategy that allowed the family to withdraw from proceedings citing an unexpected family commitment that would delay marriage plans indefinitely. "In arranged marriage contexts, preserving family reputation is paramount," explained Priya's father afterward. "Your team's cultural understanding allowed us to exit this situation without embarrassment to either family." The matchmaker was privately informed of the situation to prevent similar matches being proposed to other families. Three months later, Priya's family contacted us again – this time with a new match they wished to verify before proceeding, which our investigation confirmed as genuine.</p>
                     </div>
                   </div>
                 </div>
@@ -460,13 +533,27 @@ const CaseStudies = () => {
       </section>
       
       {/* CTA Section */}
-      <section className="py-16 bg-secondary border-t border-darkGray">
-        <div className="container mx-auto px-6 text-center">
-          <h3 className="text-3xl font-serif font-bold mb-6 text-light">Protect Your <span className="text-accent">Future</span></h3>
-          <p className="text-light/80 mb-8 max-w-2xl mx-auto single-line-text">Don't risk your emotional and financial well-being. Our discreet investigation services provide the peace of mind you deserve before making a lifelong commitment.</p>
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link to="/consultation" className="btn-primary">Request Consultation</Link>
-            <Link to="/services" className="btn-outline">View Services</Link>
+      <section className="py-20 bg-secondary border-t border-darkGray">
+        <div className="container mx-auto px-6 md:px-12 text-center">
+          <div className="max-w-4xl mx-auto bg-primary/30 p-8 md:p-12 rounded-lg shadow-lg border border-darkGray/40">
+            <h3 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-light">
+              Protect Your <span className="text-accent">Future</span>
+            </h3>
+            
+            <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
+            
+            <p className="text-light/90 text-lg mb-10 max-w-2xl mx-auto">
+              Don't risk your emotional and financial well-being. Our discreet investigation services provide the peace of mind you deserve before making a lifelong commitment.
+            </p>
+            
+            <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+              <Link to="/consultation" className="btn-primary px-8 py-3 text-base font-medium tracking-wider transition-transform hover:scale-105">
+                Request Consultation
+              </Link>
+              <Link to="/services" className="btn-outline px-8 py-3 text-base font-medium tracking-wider transition-transform hover:scale-105">
+                View Services
+              </Link>
+            </div>
           </div>
         </div>
       </section>

@@ -1,49 +1,126 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { uploadDocument } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
-const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
+const DocumentUploader = ({ onUploadSuccess, onUploadError, caseId = 'default' }) => {
   const [file, setFile] = useState(null);
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [expiryDays, setExpiryDays] = useState(30);
   const fileInputRef = useRef(null);
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const [dragActive, setDragActive] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Maximum file size in bytes (5MB)
   const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-  const handleFileChange = (e) => {
+  // Allowed file types
+  const ALLOWED_TYPES = [
+    'image/jpeg', 'image/png', 'image/gif', 
+    'application/pdf',
+    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'text/plain'
+  ];
+
+  // Format bytes to human-readable size
+  const formatBytes = (bytes, decimals = 2) => {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  };
+
+  // File validation
+  const validateFile = (file) => {
+    const errors = {};
+    
+    // Check file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      errors.size = `File is too large. Maximum size is ${formatBytes(maxSize)}.`;
+    }
+    
+    // Check file type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      errors.type = 'This file type is not supported. Please upload an image, PDF, Word document, Excel spreadsheet, or text file.';
+    }
+    
+    return errors;
+  };
+
+  const handleFileChange = useCallback((e) => {
     const selectedFile = e.target.files[0];
     setError('');
+    setUploadProgress(0);
     
-    if (selectedFile) {
-      if (selectedFile.size > MAX_FILE_SIZE) {
-        setError('File size exceeds 5MB limit');
-        setFile(null);
-        return;
-      }
-      
-      // List of allowed file types
-      const allowedTypes = [
-        'image/jpeg', 'image/png', 'image/gif', 
-        'application/pdf',
-        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'text/plain'
-      ];
-      
-      if (!allowedTypes.includes(selectedFile.type)) {
-        setError('Invalid file type. Only images, PDFs, documents, spreadsheets, and text files are allowed.');
-        setFile(null);
-        return;
-      }
-      
-      setFile(selectedFile);
+    if (!selectedFile) {
+      setFile(null);
+      return;
     }
+    
+    if (selectedFile.size > MAX_FILE_SIZE) {
+      setError('File size exceeds 5MB limit');
+      setFile(null);
+      return;
+    }
+    
+    if (!ALLOWED_TYPES.includes(selectedFile.type)) {
+      setError('Invalid file type. Only images, PDFs, documents, spreadsheets, and text files are allowed.');
+      setFile(null);
+      return;
+    }
+    
+    setFile(selectedFile);
+  }, []);
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  }, []);
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
   };
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const droppedFiles = e.dataTransfer.files;
+    if (droppedFiles && droppedFiles.length > 0) {
+      const droppedFile = droppedFiles[0];
+      
+      // Simulate the same validation as handleFileChange
+      setError('');
+      
+      if (droppedFile.size > MAX_FILE_SIZE) {
+        setError('File size exceeds 5MB limit');
+        return;
+      }
+      
+      if (!ALLOWED_TYPES.includes(droppedFile.type)) {
+        setError('Invalid file type. Only images, PDFs, documents, spreadsheets, and text files are allowed.');
+        return;
+      }
+      
+      setFile(droppedFile);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,31 +132,68 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
     
     setUploading(true);
     setError('');
+    setUploadProgress(0);
     
     try {
-      const fileData = {
-        file,
-        caseId,
-        description,
-        expiryDays,
-        tags
-      };
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('caseId', caseId);
+      formData.append('description', description);
+      formData.append('expiryDays', expiryDays);
+      formData.append('tags', tags);
+      formData.append('uploadedBy', user?._id || 'anonymous');
       
-      const response = await uploadDocument(fileData, token);
+      // Using XMLHttpRequest for upload progress tracking
+      const xhr = new XMLHttpRequest();
       
-      // Reset form
-      setFile(null);
-      setDescription('');
-      setTags('');
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(progress);
+        }
+      });
       
-      // Notify parent component about successful upload
-      onUploadSuccess(response);
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const response = JSON.parse(xhr.responseText);
+          
+          // Reset form
+          setFile(null);
+          setDescription('');
+          setTags('');
+          setUploadProgress(0);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          
+          // Notify parent component about successful upload
+          if (onUploadSuccess) {
+            onUploadSuccess(response);
+          }
+        } else {
+          throw new Error('Upload failed');
+        }
+      });
+      
+      xhr.addEventListener('error', () => {
+        throw new Error('Network error occurred during upload');
+      });
+      
+      xhr.addEventListener('abort', () => {
+        throw new Error('Upload aborted');
+      });
+      
+      xhr.open('POST', `${process.env.REACT_APP_API_URL || '/api'}/documents/upload`);
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      xhr.send(formData);
+      
     } catch (error) {
       console.error('Upload error:', error);
       setError('Failed to upload file. Please try again.');
+      
+      if (onUploadError) {
+        onUploadError(error.message || 'Unknown upload error');
+      }
     } finally {
       setUploading(false);
     }
@@ -111,6 +225,25 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
     );
   };
 
+  const renderProgressBar = () => {
+    if (!uploading || uploadProgress === 0) return null;
+    
+    return (
+      <div className="mt-4">
+        <div className="flex justify-between text-xs mb-1">
+          <span className="text-light/70">Upload Progress</span>
+          <span className="text-light">{uploadProgress}%</span>
+        </div>
+        <div className="w-full bg-darkGray rounded-full h-2">
+          <div 
+            className="bg-accent h-2 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${uploadProgress}%` }}
+          ></div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-secondary p-6 rounded shadow">
       <h4 className="text-lg font-bold text-light mb-4">Upload New Document</h4>
@@ -122,16 +255,32 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
           </div>
         )}
         
-        <div className="mb-4">
-          <label className="block text-light mb-2">Select File</label>
+        <div 
+          className={`mb-4 border-2 border-dashed border-darkGray rounded p-6 text-center cursor-pointer bg-primary/30 hover:bg-primary/50 transition-colors
+            ${dragActive ? 'border-accent bg-accent/10' : 'border-darkGray hover:border-accent/50'}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
           <input
             type="file"
             onChange={handleFileChange}
-            className="text-light text-sm block w-full cursor-pointer bg-primary border border-darkGray rounded p-2"
+            className="hidden"
             ref={fileInputRef}
             disabled={uploading}
           />
-          <p className="text-light/60 text-xs mt-1">Max 5MB. Supported formats: Images, PDF, Word, Excel, Text</p>
+          
+          <svg className="w-12 h-12 text-accent mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+          
+          <p className="text-light font-medium mb-1">
+            {file ? file.name : 'Drag and drop your file here, or click to select'}
+          </p>
+          <p className="text-light/60 text-xs">
+            Max 5MB. Supported formats: Images, PDF, Word, Excel, Text
+          </p>
         </div>
         
         {file && (
@@ -143,6 +292,8 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
             </div>
           </div>
         )}
+        
+        {renderProgressBar()}
         
         <div className="mb-4">
           <label className="block text-light mb-2">Description</label>
@@ -179,6 +330,7 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
             <option value="30">30 days after case completion</option>
             <option value="60">60 days after case completion</option>
             <option value="90">90 days after case completion</option>
+            <option value="180">180 days after case completion</option>
           </select>
         </div>
         
@@ -196,6 +348,12 @@ const DocumentUploader = ({ onUploadSuccess, caseId = 'default' }) => {
       </form>
     </div>
   );
+};
+
+DocumentUploader.propTypes = {
+  caseId: PropTypes.string.isRequired,
+  onUploadSuccess: PropTypes.func,
+  onUploadError: PropTypes.func
 };
 
 export default DocumentUploader;

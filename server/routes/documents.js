@@ -1,158 +1,130 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
+const { check, validationResult } = require('express-validator');
+const Document = require('../models/Document');
+const Case = require('../models/Case');
+const User = require('../models/User');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-const auth = require('../middleware/auth');
-const Document = require('../models/Document');
 
-// Configure multer storage
+// Set up multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, '../uploads');
-    
-    // Create upload directory if it doesn't exist
+    // Create directory if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    // Generate unique filename with original extension
-    const uniqueFilename = `${uuidv4()}${path.extname(file.originalname)}`;
-    cb(null, uniqueFilename);
+    const uniqueSuffix = Date.now() + '-' + uuidv4();
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   }
 });
 
-// Configure upload limits and file filters
+// Configure upload with file size and type limits
 const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5 MB limit
-  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
-    const allowedTypes = [
-      'image/jpeg', 'image/png', 'image/gif',
+    const allowedFileTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
       'application/pdf',
-      'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'text/plain'
     ];
     
-    if (!allowedTypes.includes(file.mimetype)) {
-      const error = new Error('Invalid file type. Only images, PDFs, documents, spreadsheets, and text files are allowed.');
-      error.code = 'INVALID_FILE_TYPE';
-      return cb(error, false);
+    if (!allowedFileTypes.includes(file.mimetype)) {
+      return cb(new Error('Only specific file types are allowed'), false);
     }
-    
     cb(null, true);
   }
 });
 
-// @route   POST api/documents
-// @desc    Upload a new document
-// @access  Private
-router.post('/', auth, upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ msg: 'No file uploaded' });
-    }
-    
-    const { caseId, description = '', tags = '', expiryDays = '30' } = req.body;
-    
-    if (!caseId) {
-      return res.status(400).json({ msg: 'Case ID is required' });
-    }
-    
-    // Calculate expiry date
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + parseInt(expiryDays));
-    
-    // Process tags (convert comma-separated string to array)
-    const tagArray = tags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag !== '');
-    
-    // Create document record
-    const newDocument = new Document({
-      user: req.user.id,
-      caseId,
-      filename: req.file.filename,
-      originalFilename: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      path: req.file.path,
-      description,
-      tags: tagArray,
-      expiryDate
-    });
-    
-    // Save document to database
-    await newDocument.save();
-    
-    // Add access log for upload
-    newDocument.accessLogs.push({
-      user: req.user.id,
-      action: 'upload',
-      ipAddress: req.ip
-    });
-    
-    await newDocument.save();
-    
-    return res.status(201).json(newDocument);
-  } catch (err) {
-    console.error('Document upload error:', err);
-    
-    if (err.code === 'LIMIT_FILE_SIZE') {
-      return res.status(400).json({ msg: 'File size exceeds the limit (5MB)' });
-    }
-    
-    if (err.code === 'INVALID_FILE_TYPE') {
-      return res.status(400).json({ msg: err.message });
-    }
-    
-    return res.status(500).json({ msg: 'Server error' });
-  }
-});
-
-// @route   GET api/documents
-// @desc    Get all documents for the authenticated user
-// @access  Private
+/**
+ * @route   GET api/documents
+ * @desc    Get all documents for current user
+ * @access  Private
+ */
 router.get('/', auth, async (req, res) => {
   try {
-    const documents = await Document.find({ user: req.user.id })
-      .sort({ uploadDate: -1 });
+    const user = await User.findById(req.user.id);
+
+    let documents;
     
-    return res.json(documents);
+    // Admin or investigator can see all documents
+    if (user.role === 'admin' || user.role === 'investigator') {
+      documents = await Document.find()
+        .sort({ uploadDate: -1 });
+    } else {
+      // Clients can only see their own documents
+      // First get the cases that belong to this client
+      const userCases = await Case.find({ clientId: req.user.id }).select('_id');
+      const caseIds = userCases.map(c => c._id);
+      
+      // Then get documents linked to these cases
+      documents = await Document.find({ caseId: { $in: caseIds } })
+        .sort({ uploadDate: -1 });
+    }
+    
+    res.json({ documents });
   } catch (err) {
-    console.error('Get documents error:', err);
-    return res.status(500).json({ msg: 'Server error' });
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 
-// @route   GET api/documents/case/:caseId
-// @desc    Get all documents for a specific case
-// @access  Private
+/**
+ * @route   GET api/documents/case/:caseId
+ * @desc    Get all documents for a specific case
+ * @access  Private
+ */
 router.get('/case/:caseId', auth, async (req, res) => {
   try {
-    const documents = await Document.find({ 
-      user: req.user.id,
-      caseId: req.params.caseId
-    }).sort({ uploadDate: -1 });
-    
-    return res.json(documents);
+    const user = await User.findById(req.user.id);
+    const caseId = req.params.caseId;
+
+    // First check access to this case
+    const caseItem = await Case.findById(caseId);
+
+    if (!caseItem) {
+      return res.status(404).json({ msg: 'Case not found' });
+    }
+
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      caseItem.clientId.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ msg: 'Not authorized to access documents for this case' });
+    }
+
+    // Get documents for case
+    const documents = await Document.find({ caseId })
+      .sort({ uploadDate: -1 });
+
+    res.json({ documents });
   } catch (err) {
-    console.error('Get case documents error:', err);
-    return res.status(500).json({ msg: 'Server error' });
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 
-// @route   GET api/documents/:id
-// @desc    Get document by ID
-// @access  Private
+/**
+ * @route   GET api/documents/:id
+ * @desc    Get a document by ID
+ * @access  Private
+ */
 router.get('/:id', auth, async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
@@ -160,125 +132,108 @@ router.get('/:id', auth, async (req, res) => {
     if (!document) {
       return res.status(404).json({ msg: 'Document not found' });
     }
-    
-    // Check if the document belongs to the user
-    if (document.user.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'Access denied' });
-    }
-    
-    // Add access log
-    document.accessLogs.push({
-      user: req.user.id,
-      action: 'view',
-      ipAddress: req.ip
-    });
-    
-    await document.save();
-    
-    return res.json(document);
-  } catch (err) {
-    console.error('Get document error:', err);
-    return res.status(500).json({ msg: 'Server error' });
-  }
-});
 
-// @route   GET api/documents/download/:id
-// @desc    Download a document
-// @access  Private
-router.get('/download/:id', auth, async (req, res) => {
-  try {
-    const document = await Document.findById(req.params.id);
+    const user = await User.findById(req.user.id);
+    const caseItem = await Case.findById(document.caseId);
     
-    if (!document) {
+    // Check access rights
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      (caseItem && caseItem.clientId.toString() !== req.user.id)
+    ) {
+      return res.status(403).json({ msg: 'Not authorized to access this document' });
+    }
+
+    res.json(document);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Document not found' });
     }
-    
-    // Check if the document belongs to the user
-    if (document.user.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'Access denied' });
-    }
-    
-    // Add access log for download
-    document.accessLogs.push({
-      user: req.user.id,
-      action: 'download',
-      ipAddress: req.ip
-    });
-    
-    await document.save();
-    
-    // Verify file exists
-    if (!fs.existsSync(document.path)) {
-      return res.status(404).json({ msg: 'File not found on server' });
-    }
-    
-    // Set headers for file download
-    res.setHeader('Content-Type', document.mimetype);
-    res.setHeader('Content-Disposition', `attachment; filename=${encodeURIComponent(document.originalFilename)}`);
-    
-    // Stream the file
-    const fileStream = fs.createReadStream(document.path);
-    fileStream.pipe(res);
-  } catch (err) {
-    console.error('Download document error:', err);
-    return res.status(500).json({ msg: 'Server error' });
+    res.status(500).send('Server Error');
   }
 });
 
-// @route   PUT api/documents/:id
-// @desc    Update document information
-// @access  Private
-router.put('/:id', auth, async (req, res) => {
+/**
+ * @route   POST api/documents/upload
+ * @desc    Upload a new document
+ * @access  Private
+ */
+router.post('/upload', auth, upload.single('file'), [
+  check('caseId', 'Case ID is required').not().isEmpty()
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   try {
-    const { description, tags, expiryDays } = req.body;
-    const document = await Document.findById(req.params.id);
-    
-    if (!document) {
-      return res.status(404).json({ msg: 'Document not found' });
+    if (!req.file) {
+      return res.status(400).json({ msg: 'No file uploaded' });
     }
+
+    const { caseId, description, expiryDays, tags } = req.body;
     
-    // Check if the document belongs to the user
-    if (document.user.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'Access denied' });
+    // Verify case exists and user has access
+    const caseItem = await Case.findById(caseId);
+
+    if (!caseItem) {
+      // Remove uploaded file to prevent orphaned files
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ msg: 'Case not found' });
     }
+
+    const user = await User.findById(req.user.id);
     
-    // Update document fields
-    if (description !== undefined) {
-      document.description = description;
+    // Access check: admin, investigator, or client that owns the case
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      caseItem.clientId.toString() !== req.user.id
+    ) {
+      // Remove uploaded file
+      fs.unlinkSync(req.file.path);
+      return res.status(403).json({ msg: 'Not authorized to upload documents to this case' });
     }
-    
-    if (tags !== undefined) {
-      document.tags = tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag !== '');
-    }
-    
-    if (expiryDays !== undefined) {
-      const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + parseInt(expiryDays));
-      document.expiryDate = expiryDate;
-    }
-    
-    // Add access log
-    document.accessLogs.push({
-      user: req.user.id,
-      action: 'update',
-      ipAddress: req.ip
+
+    // Create new document
+    const newDocument = new Document({
+      caseId,
+      fileName: req.file.originalname,
+      filePath: req.file.path,
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      uploadedBy: req.user.id,
+      description: description || '',
+      expiryDays: expiryDays || 30,
+      tags: tags ? tags.split(',').map(tag => tag.trim()) : []
     });
-    
-    await document.save();
-    
-    return res.json(document);
+
+    const document = await newDocument.save();
+
+    res.json(document);
   } catch (err) {
-    console.error('Update document error:', err);
-    return res.status(500).json({ msg: 'Server error' });
+    console.error(err.message);
+    
+    // Remove uploaded file if any error occurs after upload
+    if (req.file && req.file.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkErr) {
+        console.error('Error removing file:', unlinkErr);
+      }
+    }
+    
+    res.status(500).send('Server Error');
   }
 });
 
-// @route   DELETE api/documents/:id
-// @desc    Delete a document
-// @access  Private
+/**
+ * @route   DELETE api/documents/:id
+ * @desc    Delete a document
+ * @access  Private
+ */
 router.delete('/:id', auth, async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
@@ -286,24 +241,192 @@ router.delete('/:id', auth, async (req, res) => {
     if (!document) {
       return res.status(404).json({ msg: 'Document not found' });
     }
+
+    // Check if user has permission to delete
+    const user = await User.findById(req.user.id);
+    const caseItem = await Case.findById(document.caseId);
     
-    // Check if the document belongs to the user
-    if (document.user.toString() !== req.user.id) {
-      return res.status(403).json({ msg: 'Access denied' });
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      document.uploadedBy.toString() !== req.user.id &&
+      (caseItem && caseItem.clientId.toString() !== req.user.id)
+    ) {
+      return res.status(403).json({ msg: 'Not authorized to delete this document' });
     }
-    
-    // Delete the file from the server
-    if (fs.existsSync(document.path)) {
-      fs.unlinkSync(document.path);
+
+    // Delete file from storage
+    try {
+      if (fs.existsSync(document.filePath)) {
+        fs.unlinkSync(document.filePath);
+      }
+    } catch (err) {
+      console.error('Error deleting file from storage:', err);
     }
-    
-    // Delete the document from the database
+
+    // Remove from database
     await document.remove();
-    
-    return res.json({ msg: 'Document deleted', documentId: req.params.id });
+
+    res.json({ msg: 'Document deleted' });
   } catch (err) {
-    console.error('Delete document error:', err);
-    return res.status(500).json({ msg: 'Server error' });
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+/**
+ * @route   PATCH api/documents/:id/metadata
+ * @desc    Update document metadata (description, tags, etc)
+ * @access  Private
+ */
+router.patch('/:id/metadata', auth, async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.id);
+    
+    if (!document) {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+
+    // Check if user has permission to update
+    const user = await User.findById(req.user.id);
+    const caseItem = await Case.findById(document.caseId);
+    
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      document.uploadedBy.toString() !== req.user.id &&
+      (caseItem && caseItem.clientId.toString() !== req.user.id)
+    ) {
+      return res.status(403).json({ msg: 'Not authorized to update this document' });
+    }
+
+    // Update fields
+    const { description, tags, expiryDays } = req.body;
+
+    if (description !== undefined) {
+      document.description = description;
+    }
+    
+    if (tags !== undefined) {
+      document.tags = typeof tags === 'string' 
+        ? tags.split(',').map(tag => tag.trim())
+        : tags;
+    }
+    
+    if (expiryDays !== undefined) {
+      document.expiryDays = expiryDays;
+    }
+
+    // Save changes
+    await document.save();
+
+    res.json(document);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+/**
+ * @route   GET api/documents/:id/download
+ * @desc    Download a document
+ * @access  Private
+ */
+router.get('/:id/download', auth, async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.id);
+    
+    if (!document) {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+
+    // Check if user has permission to download
+    const user = await User.findById(req.user.id);
+    const caseItem = await Case.findById(document.caseId);
+    
+    if (
+      user.role !== 'admin' && 
+      user.role !== 'investigator' && 
+      document.uploadedBy.toString() !== req.user.id &&
+      (caseItem && caseItem.clientId.toString() !== req.user.id)
+    ) {
+      return res.status(403).json({ msg: 'Not authorized to download this document' });
+    }
+
+    // Check if file exists
+    if (!fs.existsSync(document.filePath)) {
+      return res.status(404).json({ msg: 'File not found on server' });
+    }
+
+    // Log the download activity
+    document.downloadCount += 1;
+    document.lastDownloaded = Date.now();
+    await document.save();
+
+    // Set appropriate headers
+    res.setHeader('Content-Type', document.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(document.fileName)}"`);
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(document.filePath);
+    fileStream.pipe(res);
+  } catch (err) {
+    console.error(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Document not found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+/**
+ * @route   GET api/documents/admin/all
+ * @desc    Get all documents (admin only)
+ * @access  Admin
+ */
+router.get('/admin/all', [auth, admin], async (req, res) => {
+  try {
+    const { page = 1, limit = 10, caseId = null, search = '' } = req.query;
+    const skip = (page - 1) * limit;
+    
+    // Build query
+    const query = {};
+    
+    if (caseId) {
+      query.caseId = caseId;
+    }
+    
+    if (search) {
+      query.$or = [
+        { fileName: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { tags: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const documents = await Document.find(query)
+      .sort({ uploadDate: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('uploadedBy', 'name email');
+      
+    const totalDocuments = await Document.countDocuments(query);
+    
+    res.json({
+      documents,
+      totalDocuments,
+      totalPages: Math.ceil(totalDocuments / limit),
+      currentPage: parseInt(page)
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 

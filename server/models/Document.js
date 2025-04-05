@@ -1,94 +1,58 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const DocumentSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-    required: true
-  },
+const DocumentSchema = new Schema({
   caseId: {
+    type: Schema.Types.ObjectId,
+    ref: 'case',
+    required: true
+  },
+  fileName: {
     type: String,
     required: true
   },
-  filename: {
+  filePath: {
     type: String,
     required: true
   },
-  originalFilename: {
-    type: String,
-    required: true
-  },
-  mimetype: {
-    type: String,
-    required: true
-  },
-  size: {
+  fileSize: {
     type: Number,
     required: true
   },
-  path: {
+  mimeType: {
     type: String,
     required: true
   },
-  description: {
-    type: String,
-    default: ''
-  },
-  tags: {
-    type: [String],
-    default: []
+  uploadedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
   },
   uploadDate: {
     type: Date,
     default: Date.now
   },
-  expiryDate: {
-    type: Date,
-    default: function() {
-      const date = new Date();
-      date.setDate(date.getDate() + 30); // Default 30 days expiry
-      return date;
-    }
+  description: {
+    type: String,
+    default: ''
   },
-  accessLogs: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
-      },
-      action: {
-        type: String,
-        enum: ['upload', 'view', 'download', 'update', 'delete']
-      },
-      timestamp: {
-        type: Date,
-        default: Date.now
-      },
-      ipAddress: {
-        type: String
-      }
-    }
-  ]
-});
-
-// Virtual property to check if document is expired
-DocumentSchema.virtual('isExpired').get(function() {
-  return this.expiryDate < new Date();
-});
-
-// Method to check user access rights
-DocumentSchema.methods.canAccess = function(userId) {
-  return this.user.toString() === userId.toString();
-};
-
-// Pre-save hook to ensure path is properly formatted
-DocumentSchema.pre('save', function(next) {
-  // Ensure path uses forward slashes for cross-platform compatibility
-  if (this.path) {
-    this.path = this.path.replace(/\\/g, '/');
+  tags: [String],
+  downloadCount: {
+    type: Number,
+    default: 0
+  },
+  lastDownloaded: {
+    type: Date,
+    default: null
+  },
+  expiryDays: {
+    type: Number,
+    default: 30 // Number of days after case completion when document gets deleted
+  },
+  metadata: {
+    type: Object,
+    default: {}
   }
-  
-  next();
 });
 
-module.exports = mongoose.model('document', DocumentSchema);
+module.exports = Document = mongoose.model('document', DocumentSchema);

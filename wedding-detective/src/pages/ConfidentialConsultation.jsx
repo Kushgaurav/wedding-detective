@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { submitConsultation } from '../services/api';
 
 const ConfidentialConsultation = () => {
   const [timer, setTimer] = useState(600); // 10 minutes in seconds
   const [email, setEmail] = useState('');
   const [burnerEmail, setBurnerEmail] = useState('');
   const [useBurner, setUseBurner] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    contactMethod: 'Encrypted Email',
+    serviceInterest: 'Basic Verification Package',
+    message: '',
+    captcha: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [privacyChecked, setPrivacyChecked] = useState(false);
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -32,6 +46,91 @@ const ConfidentialConsultation = () => {
     const burner = `secure-${random}@burner.detactive.com`;
     setBurnerEmail(burner);
     setUseBurner(true);
+  };
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.firstName || !formData.lastName) {
+      setSubmitError('Please provide your name or alias');
+      return;
+    }
+    
+    if (!email && !useBurner) {
+      setSubmitError('Please provide an email address or use a burner email');
+      return;
+    }
+    
+    if (!formData.phone) {
+      setSubmitError('Please provide a phone number');
+      return;
+    }
+    
+    if (!formData.message) {
+      setSubmitError('Please provide a message');
+      return;
+    }
+    
+    if (!formData.captcha) {
+      setSubmitError('Please complete the security verification');
+      return;
+    }
+    
+    if (!privacyChecked) {
+      setSubmitError('Please agree to the privacy policy');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setSubmitError(null);
+    
+    try {
+      // Prepare consultation data
+      const consultationData = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: useBurner ? burnerEmail : email,
+        phone: formData.phone,
+        message: formData.message,
+        serviceInterest: formData.serviceInterest
+      };
+      
+      // Submit to API
+      await submitConsultation(consultationData);
+      
+      // Reset form on success
+      setFormData({
+        firstName: '',
+        lastName: '',
+        phone: '',
+        contactMethod: 'Encrypted Email',
+        serviceInterest: 'Basic Verification Package',
+        message: '',
+        captcha: ''
+      });
+      setEmail('');
+      setPrivacyChecked(false);
+      setSubmitSuccess(true);
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
+      
+    } catch (error) {
+      setSubmitError('An error occurred while submitting your consultation request. Please try again.');
+      console.error('Consultation submission error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -76,15 +175,45 @@ const ConfidentialConsultation = () => {
                 <p className="text-light/70">All information submitted through this form is encrypted and handled with the strictest confidentiality. Your privacy is our priority.</p>
               </div>
               
-              <form>
+              {submitSuccess && (
+                <div className="bg-green-800/30 border border-green-700 text-light p-4 rounded mb-6 flex items-center">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                  </svg>
+                  <span>Your consultation request has been submitted successfully. We will contact you shortly.</span>
+                </div>
+              )}
+              
+              {submitError && (
+                <div className="bg-red-800/30 border border-red-700 text-light p-4 rounded mb-6 flex items-center">
+                  <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
+                  </svg>
+                  <span>{submitError}</span>
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit}>
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label className="block text-light mb-2">First Name (or Alias)</label>
-                    <input type="text" className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" />
+                    <input 
+                      type="text" 
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" 
+                    />
                   </div>
                   <div>
                     <label className="block text-light mb-2">Last Name (or Alias)</label>
-                    <input type="text" className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" />
+                    <input 
+                      type="text" 
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" 
+                    />
                   </div>
                 </div>
                 
@@ -126,8 +255,25 @@ const ConfidentialConsultation = () => {
                 </div>
                 
                 <div className="mb-6">
+                  <label className="block text-light mb-2">Phone Number</label>
+                  <input 
+                    type="tel" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" 
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+                
+                <div className="mb-6">
                   <label className="block text-light mb-2">Preferred Contact Method</label>
-                  <select className="w-full bg-darkGray border border-darkGold text-light p-3 rounded">
+                  <select 
+                    name="contactMethod"
+                    value={formData.contactMethod}
+                    onChange={handleInputChange}
+                    className="w-full bg-darkGray border border-darkGold text-light p-3 rounded"
+                  >
                     <option>Encrypted Email</option>
                     <option>Secure Phone Call</option>
                     <option>In-Person Meeting</option>
@@ -137,7 +283,12 @@ const ConfidentialConsultation = () => {
                 
                 <div className="mb-6">
                   <label className="block text-light mb-2">Service Interest</label>
-                  <select className="w-full bg-darkGray border border-darkGold text-light p-3 rounded">
+                  <select 
+                    name="serviceInterest"
+                    value={formData.serviceInterest}
+                    onChange={handleInputChange}
+                    className="w-full bg-darkGray border border-darkGold text-light p-3 rounded"
+                  >
                     <option>Basic Verification Package</option>
                     <option>Comprehensive Background Check</option>
                     <option>Premium Surveillance</option>
@@ -149,7 +300,14 @@ const ConfidentialConsultation = () => {
                 
                 <div className="mb-6">
                   <label className="block text-light mb-2">Message</label>
-                  <textarea rows="5" className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" placeholder="Please provide details about your situation. Do not include sensitive personal information in this initial contact."></textarea>
+                  <textarea 
+                    rows="5" 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="w-full bg-darkGray border border-darkGold text-light p-3 rounded" 
+                    placeholder="Please provide details about your situation. Do not include sensitive personal information in this initial contact."
+                  ></textarea>
                 </div>
                 
                 <div className="mb-8">
@@ -157,7 +315,11 @@ const ConfidentialConsultation = () => {
                   <div className="bg-darkGray border border-darkGold p-4 rounded">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-light/70">Please verify you are human</span>
-                      <button type="button" className="text-accent hover:text-darkGold transition-colors">
+                      <button 
+                        type="button" 
+                        className="text-accent hover:text-darkGold transition-colors"
+                        onClick={() => setFormData(prev => ({ ...prev, captcha: 'DETACTIVE' }))}
+                      >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                           <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"></path>
                         </svg>
@@ -166,13 +328,26 @@ const ConfidentialConsultation = () => {
                     <div className="bg-primary/50 p-3 rounded flex items-center justify-center">
                       <div className="text-accent font-bold text-xl tracking-widest">DETACTIVE</div>
                     </div>
-                    <input type="text" className="w-full bg-darkGray border border-darkGold text-light p-2 rounded mt-3" placeholder="Enter the text above" />
+                    <input 
+                      type="text" 
+                      name="captcha"
+                      value={formData.captcha}
+                      onChange={handleInputChange}
+                      className="w-full bg-darkGray border border-darkGold text-light p-2 rounded mt-3" 
+                      placeholder="Enter the text above" 
+                    />
                   </div>
                 </div>
                 
                 <div className="flex items-center mb-8">
-                  <input type="checkbox" id="privacy" className="mr-3 h-5 w-5 accent-accent" />
-                  <label htmlFor="privacy" className="text-light/70">I understand and agree that all information will be handled with strict confidentiality according to the <Link to="/compliance" className="text-accent hover:text-darkGold transition-colors">Privacy Policy</Link></label>
+                  <input 
+                    type="checkbox" 
+                    id="privacy" 
+                    checked={privacyChecked}
+                    onChange={() => setPrivacyChecked(!privacyChecked)}
+                    className="mr-3 h-5 w-5 accent-accent" 
+                  />
+                  <label htmlFor="privacy" className="text-light/70">I understand and agree that all information will be handled with strict confidentiality according to the <Link to="/privacy-policy" className="text-accent hover:text-darkGold transition-colors">Privacy Policy</Link></label>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -184,7 +359,13 @@ const ConfidentialConsultation = () => {
                       <span>256-bit Encrypted</span>
                     </div>
                   </div>
-                  <button type="submit" className="btn-primary">Submit Securely</button>
+                  <button 
+                    type="submit" 
+                    className="btn-primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit Securely'}
+                  </button>
                 </div>
               </form>
             </div>
@@ -287,9 +468,9 @@ const ConfidentialConsultation = () => {
               </div>
               <p className="text-light/70 mb-4">For clients who prefer verbal communication, our secure phone line is available during business hours.</p>
               <div className="bg-primary p-3 rounded text-center">
-                <span className="text-accent font-bold tracking-wider">+1 (555) 123-4567</span>
+                <a href="tel:+916388850059" className="text-accent font-bold tracking-wider hover:text-darkGold transition-colors">+91 6388850059</a>
               </div>
-              <p className="text-light/70 text-sm mt-3">Call hours: Monday-Friday, 9am-5pm EST</p>
+              <p className="text-light/70 text-sm mt-3">Call hours: Monday-Friday, 9am-5pm IST</p>
             </div>
             
             <div className="card p-6">
@@ -320,7 +501,71 @@ const ConfidentialConsultation = () => {
                   <span>Discreet locations available</span>
                 </li>
               </ul>
-              <button className="btn-outline w-full mt-4">Schedule Meeting</button>
+              <div className="mt-4 bg-primary p-3 rounded text-center">
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=Gramsabha+Gate,+Chaka,+Naini,+Prayagraj,+Uttar+Pradesh,+India+-+211008" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-accent font-bold tracking-wider hover:text-darkGold transition-colors"
+                >
+                  View Office Location
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Information Footer */}
+      <section className="py-10 bg-primary border-t border-darkGray">
+        <div className="container mx-auto px-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-serif font-bold mb-3 text-light">Contact <span className="text-accent">Details</span></h3>
+              <div className="h-1 w-20 bg-accent mx-auto"></div>
+            </div>
+            
+            <div className="bg-secondary p-6 rounded-lg shadow-lg border border-darkGray">
+              <div className="flex flex-col sm:flex-row items-center mb-4">
+                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-4 sm:mb-0 sm:mr-4">
+                  <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
+                  </svg>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h4 className="text-lg font-bold text-accent mb-1">Gaurav Kushwaha</h4>
+                  <p className="text-light/80 text-sm">Founder</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3 text-light/80">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <a href="tel:+916388850059" className="hover:text-accent transition-colors">+91 6388850059</a>
+                </div>
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <a href="mailto:gauravkushwaha@outlook.in" className="hover:text-accent transition-colors">gauravkushwaha@outlook.in</a>
+                </div>
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <a 
+                    href="https://www.google.com/maps/search/?api=1&query=Gramsabha+Gate,+Chaka,+Naini,+Prayagraj,+Uttar+Pradesh,+India+-+211008" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="hover:text-accent transition-colors"
+                  >
+                    Gramsabha Gate, Chaka, Naini, Prayagraj<br />Uttar Pradesh, India - 211008
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>

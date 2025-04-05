@@ -500,144 +500,293 @@ const ClientPortal = () => {
     </div>
   );
 
-  const renderDocumentVault = () => (
-    <div>
-      <h3 className="text-2xl font-bold text-light mb-6">Document <span className="text-accent">Vault</span></h3>
+  const renderDocumentVault = () => {
+    const [documents, setDocuments] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [documentError, setDocumentError] = useState(null);
+    const [showUploader, setShowUploader] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(null);
+
+    // Fetch documents when component mounts or case changes
+    useEffect(() => {
+      if (!selectedCase?._id) return;
       
-      <div className="bg-secondary p-6 rounded shadow mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h4 className="text-lg font-bold text-light">Secure File Storage</h4>
-          <button className="bg-accent hover:bg-darkGold text-white px-4 py-2 rounded-md">
-            Upload Document
-          </button>
+      const fetchDocuments = async () => {
+        setIsLoading(true);
+        setDocumentError(null);
+        
+        try {
+          const response = await getDocumentsByCase(selectedCase._id, token);
+          if (response && response.documents) {
+            setDocuments(response.documents);
+          }
+        } catch (error) {
+          console.error('Error fetching documents:', error);
+          setDocumentError('Failed to load your documents. Please try again.');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchDocuments();
+    }, [selectedCase?._id, token]);
+
+    // Handle document upload success
+    const handleUploadSuccess = (uploadedDocument) => {
+      setDocuments(prev => [uploadedDocument, ...prev]);
+      setShowUploader(false);
+    };
+
+    // Handle document deletion
+    const handleDeleteDocument = async (documentId) => {
+      try {
+        await deleteDocument(documentId, token);
+        setDocuments(prev => prev.filter(doc => doc._id !== documentId));
+        setConfirmDelete(null);
+      } catch (error) {
+        console.error('Error deleting document:', error);
+        alert('Failed to delete the document. Please try again.');
+      }
+    };
+
+    // Handle document download
+    const handleDownloadDocument = async (documentId, fileName) => {
+      try {
+        const response = await downloadDocument(documentId, token);
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', fileName);
+        
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+      } catch (error) {
+        console.error('Error downloading document:', error);
+        alert('Failed to download the document. Please try again.');
+      }
+    };
+
+    // Get appropriate icon for document type
+    const getDocumentIcon = (mimeType) => {
+      if (mimeType.startsWith('image/')) {
+        return (
+          <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"></path>
+          </svg>
+        );
+      } else if (mimeType === 'application/pdf') {
+        return (
+          <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
+          </svg>
+        );
+      } else {
+        return (
+          <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
+          </svg>
+        );
+      }
+    };
+
+    return (
+      <div>
+        <h3 className="text-2xl font-bold text-light mb-6">Document <span className="text-accent">Vault</span></h3>
+        
+        {documentError && (
+          <div className="bg-red-900/30 border border-red-500 text-red-200 p-4 rounded mb-6">
+            <p>{documentError}</p>
+            <button 
+              className="mt-2 text-accent hover:text-darkGold underline"
+              onClick={() => {
+                setDocumentError(null);
+                // Retry loading documents
+                if (selectedCase?._id) {
+                  getDocumentsByCase(selectedCase._id, token)
+                    .then(response => {
+                      if (response && response.documents) {
+                        setDocuments(response.documents);
+                      }
+                    })
+                    .catch(err => {
+                      console.error('Error retrying document fetch:', err);
+                      setDocumentError('Failed to load your documents. Please try again.');
+                    });
+                }
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+        
+        <div className="bg-secondary p-6 rounded shadow mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-lg font-bold text-light">Secure File Storage</h4>
+            <button 
+              className="bg-accent hover:bg-darkGold text-white px-4 py-2 rounded-md"
+              onClick={() => setShowUploader(!showUploader)}
+            >
+              {showUploader ? 'Cancel Upload' : 'Upload Document'}
+            </button>
+          </div>
+          
+          <p className="text-light/70 mb-6">
+            All files are encrypted with 256-bit encryption and will be automatically purged after your specified retention period.
+          </p>
+          
+          {showUploader && (
+            <div className="mb-6">
+              <DocumentUploader 
+                onUploadSuccess={handleUploadSuccess}
+                onUploadError={(error) => setDocumentError(error)}
+                caseId={selectedCase?._id}
+              />
+            </div>
+          )}
+          
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent mx-auto"></div>
+              <p className="mt-2 text-light/70">Loading documents...</p>
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="text-center py-8 border border-dashed border-darkGray rounded">
+              <svg className="w-16 h-16 text-light/30 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
+              </svg>
+              <p className="text-light/50 mb-2">No documents have been uploaded yet</p>
+              <button
+                onClick={() => setShowUploader(true)}
+                className="text-accent hover:text-darkGold underline"
+              >
+                Upload your first document
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {documents.map((doc) => (
+                <div key={doc._id} className="border border-darkGray rounded p-4 flex items-center justify-between transition-colors hover:bg-darkGray/20">
+                  <div className="flex items-center">
+                    {getDocumentIcon(doc.mimeType)}
+                    <div>
+                      <h5 className="text-light font-medium">{doc.fileName}</h5>
+                      <p className="text-light/70 text-xs">Uploaded {new Date(doc.uploadDate).toLocaleDateString()} • {(doc.fileSize / 1024).toFixed(2)} KB</p>
+                      {doc.description && (
+                        <p className="text-light/70 text-xs mt-1">{doc.description}</p>
+                      )}
+                      {doc.tags && doc.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {doc.tags.map((tag, index) => (
+                            <span key={index} className="bg-accent/20 text-accent text-xs py-0.5 px-1.5 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button 
+                      className="text-accent hover:text-darkGold"
+                      onClick={() => handleDownloadDocument(doc._id, doc.fileName)}
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"></path>
+                      </svg>
+                    </button>
+                    <button 
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => setConfirmDelete(doc._id)}
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  {confirmDelete === doc._id && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                      <div className="bg-secondary p-6 rounded-lg shadow-xl max-w-md w-full">
+                        <h3 className="text-xl font-bold text-light mb-4">Confirm Deletion</h3>
+                        <p className="text-light/70 mb-6">
+                          Are you sure you want to delete this document? This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end space-x-3">
+                          <button
+                            onClick={() => setConfirmDelete(null)}
+                            className="px-4 py-2 bg-darkGray text-light hover:bg-darkGray/70 rounded"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDocument(doc._id)}
+                            className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         
-        <p className="text-light/70 mb-6">
-          All files are encrypted with 256-bit encryption and will be automatically purged 30 days after case completion.
-        </p>
-        
-        <div className="space-y-3">
-          <div className="border border-darkGray rounded p-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
-              </svg>
-              <div>
-                <h5 className="text-light font-medium">Financial_Documents.pdf</h5>
-                <p className="text-light/70 text-xs">Uploaded 2 days ago • 2.4 MB</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <button className="text-accent hover:text-darkGold">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                </svg>
-              </button>
-              <button className="text-red-500 hover:text-red-700">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
+        <div className="bg-secondary p-6 rounded shadow">
+          <h4 className="text-lg font-bold text-light mb-4">Security Settings</h4>
           
-          <div className="border border-darkGray rounded p-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
-              </svg>
-              <div>
-                <h5 className="text-light font-medium">ID_Documentation.zip</h5>
-                <p className="text-light/70 text-xs">Uploaded 3 days ago • 5.7 MB</p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <h5 className="font-medium text-light">Document Expiry</h5>
+                <p className="text-light/70 text-sm">Control when your documents are automatically deleted</p>
+              </div>
+              <div className="flex items-center">
+                <select className="bg-primary border border-darkGray text-light p-2 rounded">
+                  <option>30 days after case</option>
+                  <option>60 days after case</option>
+                  <option>90 days after case</option>
+                </select>
               </div>
             </div>
-            <div className="flex gap-3">
-              <button className="text-accent hover:text-darkGold">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                </svg>
-              </button>
-              <button className="text-red-500 hover:text-red-700">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <div className="border border-darkGray rounded p-4 flex items-center justify-between">
-            <div className="flex items-center">
-              <svg className="w-8 h-8 text-accent mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd"></path>
-              </svg>
-              <div>
-                <h5 className="text-light font-medium">Photos.jpg</h5>
-                <p className="text-light/70 text-xs">Uploaded 4 days ago • 1.2 MB</p>
+            
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <h5 className="font-medium text-light">Two-Factor Authentication</h5>
+                <p className="text-light/70 text-sm">Require 2FA for document access</p>
+              </div>
+              <div className="flex items-center">
+                <label className="inline-flex relative items-center cursor-pointer">
+                  <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                  <div className="w-11 h-6 bg-darkGray peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-darkGray after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                </label>
               </div>
             </div>
-            <div className="flex gap-3">
-              <button className="text-accent hover:text-darkGold">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                </svg>
-              </button>
-              <button className="text-red-500 hover:text-red-700">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                </svg>
-              </button>
+            
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <h5 className="font-medium text-light">Watermarking</h5>
+                <p className="text-light/70 text-sm">Apply watermarks to downloaded documents</p>
+              </div>
+              <div className="flex items-center">
+                <label className="inline-flex relative items-center cursor-pointer">
+                  <input type="checkbox" value="" className="sr-only peer" defaultChecked />
+                  <div className="w-11 h-6 bg-darkGray peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-darkGray after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                </label>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <div className="bg-secondary p-6 rounded shadow">
-        <h4 className="text-lg font-bold text-light mb-4">Security Settings</h4>
-        
-        <div className="space-y-4">
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <h5 className="font-medium text-light">Document Expiry</h5>
-              <p className="text-light/70 text-sm">Control when your documents are automatically deleted</p>
-            </div>
-            <div className="flex items-center">
-              <select className="bg-primary border border-darkGray text-light p-2 rounded">
-                <option>30 days after case</option>
-                <option>60 days after case</option>
-                <option>90 days after case</option>
-              </select>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <h5 className="font-medium text-light">Two-Factor Authentication</h5>
-              <p className="text-light/70 text-sm">Require 2FA for document access</p>
-            </div>
-            <div className="flex items-center">
-              <label className="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" value="" className="sr-only peer" checked />
-                <div className="w-11 h-6 bg-darkGray peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-darkGray after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
-              </label>
-            </div>
-          </div>
-          
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <h5 className="font-medium text-light">Watermarking</h5>
-              <p className="text-light/70 text-sm">Apply watermarks to downloaded documents</p>
-            </div>
-            <div className="flex items-center">
-              <label className="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" value="" className="sr-only peer" checked />
-                <div className="w-11 h-6 bg-darkGray peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-darkGray after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderSecureMessages = () => (
     <div>
