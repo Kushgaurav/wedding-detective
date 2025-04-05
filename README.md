@@ -86,4 +86,8 @@ The application can be deployed using platforms like Heroku, Netlify, or Vercel 
 This project is licensed under the MIT License.
 
 ## Contact
-For questions or support, please contact the development team at contact@weddingdetective.com
+For questions or support, please contact the development team:
+- **Email**: gauravkushwaha@outlook.in
+- **Phone**: +91 6388850059  
+- **Address**: Gramsabha Gate, Chaka, Naini, Prayagraj, Uttar Pradesh, India - 211008
+- **Website**: https://weddingdetective.com this is demo link 
