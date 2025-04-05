@@ -16,10 +16,46 @@ const AdminDashboard = () => {
     totalClients: 36
   });
   const [recentConsultations, setRecentConsultations] = useState([
-    { id: 'CON-2023', name: 'Sarah Johnson', date: '2025-03-29', status: 'pending' },
-    { id: 'CON-2022', name: 'Michael Chen', date: '2025-03-28', status: 'pending' },
-    { id: 'CON-2021', name: 'Emily Rodriguez', date: '2025-03-27', status: 'contacted' },
-    { id: 'CON-2020', name: 'David Wilson', date: '2025-03-26', status: 'scheduled' }
+    { 
+      id: 'CON-2023', 
+      name: 'Sarah Johnson', 
+      email: 'sarah.j@example.com',
+      phone: '(555) 123-4567',
+      serviceInterest: 'Comprehensive Background Check',
+      message: 'I\'m getting married in 6 months and would like to verify my fiancé\'s background. Particularly interested in financial history verification.',
+      date: '2025-03-29', 
+      status: 'pending' 
+    },
+    { 
+      id: 'CON-2022', 
+      name: 'Michael Chen', 
+      email: 'mchen@example.com',
+      phone: '(555) 987-6543',
+      serviceInterest: 'Basic Verification Package',
+      message: 'Need some basic verification of employment history and education credentials. Getting engaged soon.',
+      date: '2025-03-28', 
+      status: 'pending' 
+    },
+    { 
+      id: 'CON-2021', 
+      name: 'Emily Rodriguez', 
+      email: 'emily.r@example.com',
+      phone: '(555) 234-5678',
+      serviceInterest: 'Premium Surveillance',
+      message: 'I have suspicions about my partner\'s activities. Would like to discuss surveillance options discreetly.',
+      date: '2025-03-27', 
+      status: 'contacted' 
+    },
+    { 
+      id: 'CON-2020', 
+      name: 'David Wilson', 
+      email: 'dwilson@example.com',
+      phone: '(555) 876-5432',
+      serviceInterest: 'International Background Check',
+      message: 'My fiancée is from another country. Need thorough background verification including international records.',
+      date: '2025-03-26', 
+      status: 'scheduled' 
+    }
   ]);
   const [activeCases, setActiveCases] = useState([
     { id: 'WD-29384', client: 'Rebecca Thompson', investigator: 'Agent #WD-117', progress: 75, status: 'active' },
@@ -27,7 +63,6 @@ const AdminDashboard = () => {
     { id: 'WD-29379', client: 'Sophia Garcia', investigator: 'Agent #WD-117', progress: 90, status: 'active' },
     { id: 'WD-29376', client: 'Daniel Johnson', investigator: 'Agent #WD-303', progress: 25, status: 'active' }
   ]);
-  // New state for services management
   const [services, setServices] = useState([
     { id: 1, name: 'Basic Verification Package', price: 299, active: true },
     { id: 2, name: 'Comprehensive Background Check', price: 799, active: true },
@@ -35,22 +70,18 @@ const AdminDashboard = () => {
     { id: 4, name: 'International Background Check', price: 400, active: true },
     { id: 5, name: 'Family Due Diligence', price: 999, active: true },
   ]);
-  // New state for payment transactions
   const [recentPayments, setRecentPayments] = useState([
     { id: 'PAY-2023', client: 'Rebecca Thompson', amount: 799, date: '2025-03-29', status: 'completed', method: 'Credit Card' },
     { id: 'PAY-2022', client: 'James Miller', amount: 299, date: '2025-03-28', status: 'completed', method: 'PayPal' },
     { id: 'PAY-2021', client: 'Sophia Garcia', amount: 1500, date: '2025-03-26', status: 'pending', method: 'Bank Transfer' },
     { id: 'PAY-2020', client: 'Daniel Johnson', amount: 400, date: '2025-03-24', status: 'completed', method: 'Cryptocurrency' },
   ]);
-  // New state for user management
   const [users, setUsers] = useState([
     { id: 1, name: 'Rebecca Thompson', email: 'rebecca@example.com', role: 'client', status: 'active', lastLogin: '2025-03-30' },
     { id: 2, name: 'James Miller', email: 'james@example.com', role: 'client', status: 'active', lastLogin: '2025-03-28' },
     { id: 3, name: 'Agent #WD-117', email: 'agent117@detective.com', role: 'investigator', status: 'active', lastLogin: '2025-03-31' },
     { id: 4, name: 'Agent #WD-205', email: 'agent205@detective.com', role: 'investigator', status: 'active', lastLogin: '2025-03-29' },
   ]);
-  
-  // Client messages state
   const [clientMessages, setClientMessages] = useState([
     {
       id: 'MSG-2025-001',
@@ -97,14 +128,15 @@ const AdminDashboard = () => {
       priority: 'high'
     }
   ]);
-  
   const [activeMessage, setActiveMessage] = useState(null);
   const [messageReply, setMessageReply] = useState('');
+  const [selectedConsultation, setSelectedConsultation] = useState(null);
+  const [showConsultationModal, setShowConsultationModal] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [consultationNotes, setConsultationNotes] = useState('');
 
-  // Double check admin status - redirect if not admin
   useEffect(() => {
-    // Only redirect if authentication status is actually loaded (not during initial loading)
-    // This check prevents redirects during the initial loading state
     if (!loading && (!isAuthenticated || !user?.isAdmin)) {
       navigate('/login');
     }
@@ -115,26 +147,17 @@ const AdminDashboard = () => {
     navigate('/login');
   };
 
-  // In a real app, we would fetch this data from the API
   useEffect(() => {
-    // Only fetch data if we're authenticated and admin, and not during loading
     if (loading || !isAuthenticated || !user?.isAdmin) return;
-    
-    // Simulate API fetch - don't need to refetch on every render
     const fetchDashboardData = async () => {
       try {
-        // Fetch implementation would go here
-        // This is just a mock
       } catch (error) {
         console.error('Error fetching admin dashboard data:', error);
       }
     };
-
     fetchDashboardData();
-    // Only re-run if these dependencies change
   }, [user?.isAdmin, isAuthenticated, loading]);
 
-  // If not admin, don't render admin content
   if (!user?.isAdmin) {
     return null;
   }
@@ -299,7 +322,337 @@ const AdminDashboard = () => {
     </div>
   );
 
-  // Replace existing AdminOverview component with this updated version
+  const ConsultationManagement = () => {
+    const filteredConsultations = recentConsultations.filter(consultation => {
+      const matchesStatus = statusFilter === 'all' || consultation.status === statusFilter;
+      const matchesSearch = 
+        consultation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consultation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consultation.id.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+    
+    const updateConsultationStatus = (id, newStatus) => {
+      setRecentConsultations(prevConsultations =>
+        prevConsultations.map(consultation =>
+          consultation.id === id ? { ...consultation, status: newStatus } : consultation
+        )
+      );
+      if (selectedConsultation && selectedConsultation.id === id) {
+        setSelectedConsultation({ ...selectedConsultation, status: newStatus });
+      }
+    };
+    
+    const handleViewConsultation = (consultation) => {
+      setSelectedConsultation(consultation);
+      setConsultationNotes('');
+      setShowConsultationModal(true);
+    };
+
+    return (
+      <div className="bg-secondary p-6 rounded shadow">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h3 className="text-xl font-bold text-light">Consultation Requests</h3>
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative w-full sm:w-64">
+              <input 
+                type="text"
+                placeholder="Search by name, email, ID..."
+                className="w-full bg-darkGray border border-darkGray/50 text-light px-3 py-2 rounded"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute right-3 top-2.5 text-light/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <select 
+              className="bg-darkGray border border-darkGray/50 text-light px-3 py-2 rounded"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="contacted">Contacted</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button className="bg-transparent border border-accent hover:border-darkGold text-accent hover:text-darkGold px-4 py-2 rounded">
+              Export Data
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-6">
+          <div className="bg-primary/30 p-3 rounded text-center">
+            <p className="text-light/60 text-xs">Total</p>
+            <p className="text-xl text-light font-bold">{recentConsultations.length}</p>
+          </div>
+          <div className="bg-yellow-500/10 p-3 rounded text-center">
+            <p className="text-yellow-400 text-xs">Pending</p>
+            <p className="text-xl text-light font-bold">
+              {recentConsultations.filter(c => c.status === 'pending').length}
+            </p>
+          </div>
+          <div className="bg-blue-500/10 p-3 rounded text-center">
+            <p className="text-blue-400 text-xs">Contacted</p>
+            <p className="text-xl text-light font-bold">
+              {recentConsultations.filter(c => c.status === 'contacted').length}
+            </p>
+          </div>
+          <div className="bg-green-500/10 p-3 rounded text-center">
+            <p className="text-green-400 text-xs">Scheduled</p>
+            <p className="text-xl text-light font-bold">
+              {recentConsultations.filter(c => c.status === 'scheduled').length}
+            </p>
+          </div>
+          <div className="bg-purple-500/10 p-3 rounded text-center">
+            <p className="text-purple-400 text-xs">Completed</p>
+            <p className="text-xl text-light font-bold">
+              {recentConsultations.filter(c => c.status === 'completed').length}
+            </p>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          {filteredConsultations.length > 0 ? (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-darkGray">
+                  <th className="text-left pb-2 text-light/70">ID</th>
+                  <th className="text-left pb-2 text-light/70">Name</th>
+                  <th className="text-left pb-2 text-light/70">Email</th>
+                  <th className="text-left pb-2 text-light/70">Service Interest</th>
+                  <th className="text-left pb-2 text-light/70">Date</th>
+                  <th className="text-left pb-2 text-light/70">Status</th>
+                  <th className="text-right pb-2 text-light/70">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredConsultations.map(consultation => (
+                  <tr key={consultation.id} className="border-b border-darkGray hover:bg-darkGray/20">
+                    <td className="py-3 text-light">{consultation.id}</td>
+                    <td className="py-3 text-light">{consultation.name}</td>
+                    <td className="py-3 text-light/70">{consultation.email}</td>
+                    <td className="py-3 text-light/70 max-w-[200px] truncate" title={consultation.serviceInterest}>
+                      {consultation.serviceInterest || 'N/A'}
+                    </td>
+                    <td className="py-3 text-light/70">{new Date(consultation.date).toLocaleDateString()}</td>
+                    <td className="py-3">
+                      <span className={`inline-block py-1 px-2 rounded text-xs font-bold uppercase
+                        ${consultation.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : 
+                          consultation.status === 'contacted' ? 'bg-blue-500/20 text-blue-500' : 
+                          consultation.status === 'scheduled' ? 'bg-green-500/20 text-green-500' :
+                          consultation.status === 'completed' ? 'bg-purple-500/20 text-purple-500' : 
+                          'bg-red-500/20 text-red-500'}`}>
+                        {consultation.status}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <div className="flex justify-end gap-2">
+                        {consultation.status === 'pending' && (
+                          <button 
+                            onClick={() => updateConsultationStatus(consultation.id, 'contacted')}
+                            className="text-blue-400 hover:text-blue-600 bg-blue-500/10 px-2 py-1 rounded text-xs"
+                          >
+                            Mark Contacted
+                          </button>
+                        )}
+                        {consultation.status === 'contacted' && (
+                          <button 
+                            onClick={() => updateConsultationStatus(consultation.id, 'scheduled')}
+                            className="text-green-400 hover:text-green-600 bg-green-500/10 px-2 py-1 rounded text-xs"
+                          >
+                            Mark Scheduled
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => handleViewConsultation(consultation)}
+                          className="text-accent hover:text-darkGold px-2 py-1 rounded text-xs"
+                        >
+                          View
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-8 text-light/50">
+              <p>No consultation requests found matching your filters</p>
+            </div>
+          )}
+        </div>
+        
+        {showConsultationModal && selectedConsultation && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+            <div className="bg-secondary rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
+              <div className="flex justify-between items-center border-b border-darkGray p-4">
+                <h4 className="text-xl font-bold text-light">Consultation Request Details</h4>
+                <button 
+                  onClick={() => setShowConsultationModal(false)}
+                  className="text-light/50 hover:text-light"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto max-h-[70vh]">
+                <div className="flex justify-between mb-6">
+                  <span className={`inline-block py-1 px-3 rounded text-xs font-bold uppercase
+                    ${selectedConsultation.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : 
+                      selectedConsultation.status === 'contacted' ? 'bg-blue-500/20 text-blue-500' : 
+                      selectedConsultation.status === 'scheduled' ? 'bg-green-500/20 text-green-500' : 
+                      selectedConsultation.status === 'completed' ? 'bg-purple-500/20 text-purple-500' : 
+                      'bg-red-500/20 text-red-500'}`}
+                  >
+                    Status: {selectedConsultation.status}
+                  </span>
+                  <span className="text-light/50 text-sm">
+                    ID: {selectedConsultation.id} • Submitted: {new Date(selectedConsultation.date).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <h5 className="text-accent font-bold mb-2 text-sm uppercase">Client Information</h5>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-light/50 text-sm">Full Name</label>
+                        <p className="text-light">{selectedConsultation.name}</p>
+                      </div>
+                      <div>
+                        <label className="block text-light/50 text-sm">Email Address</label>
+                        <p className="text-light">{selectedConsultation.email}</p>
+                      </div>
+                      <div>
+                        <label className="block text-light/50 text-sm">Phone Number</label>
+                        <p className="text-light">{selectedConsultation.phone}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h5 className="text-accent font-bold mb-2 text-sm uppercase">Service Details</h5>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-light/50 text-sm">Service Interest</label>
+                        <p className="text-light">{selectedConsultation.serviceInterest || 'Not specified'}</p>
+                      </div>
+                      <div>
+                        <label className="block text-light/50 text-sm">Price Range</label>
+                        <p className="text-light">
+                          {selectedConsultation.serviceInterest === 'Basic Verification Package' && '$299'} 
+                          {selectedConsultation.serviceInterest === 'Comprehensive Background Check' && '$799'}
+                          {selectedConsultation.serviceInterest === 'Premium Surveillance' && '$1,500'}
+                          {selectedConsultation.serviceInterest === 'International Background Check' && '$400'}
+                          {selectedConsultation.serviceInterest === 'Family Due Diligence' && '$999'}
+                          {!selectedConsultation.serviceInterest && 'To be determined'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h5 className="text-accent font-bold mb-2 text-sm uppercase">Client Message</h5>
+                  <div className="bg-darkGray p-4 rounded">
+                    <p className="text-light whitespace-pre-wrap">{selectedConsultation.message}</p>
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h5 className="text-accent font-bold mb-2 text-sm uppercase">Admin Notes</h5>
+                  <textarea
+                    className="w-full bg-darkGray border border-darkGray/50 text-light p-3 rounded min-h-[100px]"
+                    placeholder="Add notes about this consultation request (only visible to admins)..."
+                    value={consultationNotes}
+                    onChange={(e) => setConsultationNotes(e.target.value)}
+                  ></textarea>
+                </div>
+                
+                <div className="mb-6">
+                  <h5 className="text-accent font-bold mb-2 text-sm uppercase">Update Status</h5>
+                  <div className="flex flex-wrap gap-2">
+                    <button 
+                      onClick={() => updateConsultationStatus(selectedConsultation.id, 'pending')}
+                      className={`px-3 py-2 rounded text-sm ${
+                        selectedConsultation.status === 'pending' ? 
+                        'bg-yellow-500/20 text-yellow-500 border border-yellow-500' : 
+                        'bg-darkGray text-yellow-500 hover:bg-yellow-500/10'
+                      }`}
+                    >
+                      Pending
+                    </button>
+                    <button 
+                      onClick={() => updateConsultationStatus(selectedConsultation.id, 'contacted')}
+                      className={`px-3 py-2 rounded text-sm ${
+                        selectedConsultation.status === 'contacted' ? 
+                        'bg-blue-500/20 text-blue-500 border border-blue-500' : 
+                        'bg-darkGray text-blue-500 hover:bg-blue-500/10'
+                      }`}
+                    >
+                      Contacted
+                    </button>
+                    <button 
+                      onClick={() => updateConsultationStatus(selectedConsultation.id, 'scheduled')}
+                      className={`px-3 py-2 rounded text-sm ${
+                        selectedConsultation.status === 'scheduled' ? 
+                        'bg-green-500/20 text-green-500 border border-green-500' : 
+                        'bg-darkGray text-green-500 hover:bg-green-500/10'
+                      }`}
+                    >
+                      Scheduled
+                    </button>
+                    <button 
+                      onClick={() => updateConsultationStatus(selectedConsultation.id, 'completed')}
+                      className={`px-3 py-2 rounded text-sm ${
+                        selectedConsultation.status === 'completed' ? 
+                        'bg-purple-500/20 text-purple-500 border border-purple-500' : 
+                        'bg-darkGray text-purple-500 hover:bg-purple-500/10'
+                      }`}
+                    >
+                      Completed
+                    </button>
+                    <button 
+                      onClick={() => updateConsultationStatus(selectedConsultation.id, 'cancelled')}
+                      className={`px-3 py-2 rounded text-sm ${
+                        selectedConsultation.status === 'cancelled' ? 
+                        'bg-red-500/20 text-red-500 border border-red-500' : 
+                        'bg-darkGray text-red-500 hover:bg-red-500/10'
+                      }`}
+                    >
+                      Cancelled
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="border-t border-darkGray p-4 flex justify-end gap-3">
+                <button 
+                  onClick={() => setShowConsultationModal(false)}
+                  className="bg-darkGray text-light hover:bg-darkGray/70 px-4 py-2 rounded"
+                >
+                  Close
+                </button>
+                <button className="bg-transparent border border-accent text-accent hover:border-darkGold hover:text-darkGold px-4 py-2 rounded mr-2">
+                  Send Email
+                </button>
+                <button className="bg-accent hover:bg-darkGold text-white px-4 py-2 rounded">
+                  Save Notes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const AdminOverview = () => (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -416,7 +769,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Recent Payments Widget */}
       <div className="bg-secondary p-6 rounded shadow mb-8">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-light">Recent Payments</h3>
@@ -471,7 +823,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-primary flex">
-      {/* Sidebar */}
       <div className="w-64 bg-secondary border-r border-darkGray hidden lg:block">
         <div className="p-4 border-b border-darkGray">
           <h2 className="text-xl font-bold text-accent">Admin Panel</h2>
@@ -490,7 +841,7 @@ const AdminDashboard = () => {
                       ? 'bg-accent/10 text-accent'
                       : 'text-light hover:bg-darkGray'
                   }`}
-                >
+                ></button>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z" />
                     <path d="M3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z" />
@@ -502,335 +853,3 @@ const AdminDashboard = () => {
               <li>
                 <button
                   onClick={() => setActiveSection('users')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'users'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
-                  </svg>
-                  User Management
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection('services')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'services'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                  </svg>
-                  Service Management
-                </button>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="mb-6">
-            <h3 className="text-light text-xs uppercase tracking-wider mb-3">Operations</h3>
-            <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => setActiveSection('cases')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'cases'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
-                  </svg>
-                  Case Management
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection('consultations')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'consultations'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
-                  </svg>
-                  Consultation Requests
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection('payments')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'payments'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-                    <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
-                  </svg>
-                  Payment Management
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => setActiveSection('messages')}
-                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
-                    activeSection === 'messages'
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-light hover:bg-darkGray'
-                  }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z" />
-                    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z" clipRule="evenodd" />
-                  </svg>
-                  Messages
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* User Menu - keeping this logout button */}
-      {showUserMenu && (
-        <div className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-secondary border border-darkGray shadow-lg">
-          <div className="py-1" role="menu" aria-orientation="vertical">
-            <button
-              onClick={() => { setShowProfileEdit(true); setShowUserMenu(false); }}
-              className="w-full text-left px-4 py-2 text-sm text-light hover:bg-darkGray"
-              role="menuitem"
-            >
-              Account Settings
-            </button>
-            <button
-              onClick={handleLogout}
-              className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-darkGray"
-              role="menuitem"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Admin Overview */}
-      <div className="flex-grow p-6">
-        {activeSection === 'dashboard' && <AdminOverview />}
-        {activeSection === 'users' && <UserManagement />}
-        {activeSection === 'services' && <ServiceManagement />}
-        {activeSection === 'payments' && <PaymentManagement />}
-        {activeSection === 'cases' && (
-          <div className="bg-secondary p-6 rounded shadow">
-            <h3 className="text-xl font-bold text-light mb-6">Case Management</h3>
-            <div className="space-y-4">
-              {activeCases.map(activeCase => (
-                <div key={activeCase.id} className="border-b border-darkGray pb-4 last:border-0 last:pb-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <div>
-                      <h4 className="text-light font-bold">{activeCase.client}</h4>
-                      <div className="flex items-center text-light/70 text-sm">
-                        <span className="mr-2">Case ID: {activeCase.id}</span>
-                        <span>Investigator: {activeCase.investigator}</span>
-                      </div>
-                    </div>
-                    <button className="text-accent hover:text-darkGold">Details</button>
-                  </div>
-                  
-                  <div className="w-full bg-darkGray rounded-full h-2.5 mt-2">
-                    <div 
-                      className="bg-accent h-2.5 rounded-full"
-                      style={{ width: `${activeCase.progress}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs mt-1">
-                    <span className="text-light/70">Progress</span>
-                    <span className="text-light">{activeCase.progress}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-        {activeSection === 'consultations' && (
-          <div className="bg-secondary p-6 rounded shadow">
-            <h3 className="text-xl font-bold text-light mb-6">Consultation Requests</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-darkGray">
-                    <th className="text-left pb-2 text-light/70">ID</th>
-                    <th className="text-left pb-2 text-light/70">Name</th>
-                    <th className="text-left pb-2 text-light/70">Date</th>
-                    <th className="text-left pb-2 text-light/70">Status</th>
-                    <th className="text-right pb-2 text-light/70">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentConsultations.map(consultation => (
-                    <tr key={consultation.id} className="border-b border-darkGray">
-                      <td className="py-3 text-light">{consultation.id}</td>
-                      <td className="py-3 text-light">{consultation.name}</td>
-                      <td className="py-3 text-light">{new Date(consultation.date).toLocaleDateString()}</td>
-                      <td className="py-3">
-                        <span className={`inline-block py-1 px-2 rounded text-xs font-bold uppercase
-                          ${consultation.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : 
-                            consultation.status === 'contacted' ? 'bg-blue-500/20 text-blue-500' : 
-                            'bg-green-500/20 text-green-500'}`}>
-                          {consultation.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-right">
-                        <button className="text-accent hover:text-darkGold">View</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-        {activeSection === 'messages' && (
-          <div className="bg-secondary p-6 rounded shadow h-[calc(100vh-140px)]">
-            <h3 className="text-xl font-bold text-light mb-6">Client Messages</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100%-60px)]">
-              {/* Message List Sidebar */}
-              <div className="lg:col-span-1 border-r border-darkGray pr-4 flex flex-col h-full">
-                <div className="mb-4">
-                  <input 
-                    type="text"
-                    placeholder="Search messages..."
-                    className="w-full bg-darkGray border border-darkGray/50 text-light px-3 py-2 rounded"
-                  />
-                </div>
-                <div className="space-y-2 overflow-y-auto flex-grow pr-2">
-                  {clientMessages.map((message) => (
-                    <div 
-                      key={message.id}
-                      onClick={() => setActiveMessage(message)}
-                      className={`p-3 rounded cursor-pointer transition-all ${
-                        activeMessage?.id === message.id 
-                          ? 'bg-accent/10 border border-accent/30' 
-                          : 'bg-darkGray hover:bg-darkGray/70'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <h4 className="font-medium text-light">{message.client}</h4>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          message.status === 'unread' 
-                            ? 'bg-red-500/20 text-red-400' 
-                            : message.status === 'replied'
-                              ? 'bg-green-500/20 text-green-500'
-                              : 'bg-blue-500/20 text-blue-400'
-                        }`}>
-                          {message.status}
-                        </span>
-                      </div>
-                      <p className="text-sm text-light/70 truncate">{message.title}</p>
-                      <div className="flex justify-between items-center mt-2 text-xs text-light/50">
-                        <span>Case: {message.caseId}</span>
-                        <span>{new Date(message.date).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Chat Message Area */}
-              <div className="lg:col-span-2 flex flex-col h-full">
-                {activeMessage ? (
-                  <>
-                    <div className="flex justify-between items-start mb-4 sticky top-0 bg-secondary z-10 pb-3 border-b border-darkGray">
-                      <div>
-                        <h3 className="text-xl font-bold text-light">{activeMessage.title}</h3>
-                        <p className="text-light/70">From: {activeMessage.client} • {new Date(activeMessage.date).toLocaleDateString()}</p>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        activeMessage.priority === 'high' 
-                          ? 'bg-red-500/20 text-red-400' 
-                          : 'bg-yellow-500/20 text-yellow-500'
-                      }`}>
-                        {activeMessage.priority} priority
-                      </span>
-                    </div>
-                    
-                    <div className="flex-1 overflow-y-auto mb-4">
-                      {/* Client Message */}
-                      <div className="flex mb-4">
-                        <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center mr-2 flex-shrink-0 uppercase font-bold">
-                          {activeMessage.client.charAt(0)}
-                        </div>
-                        <div className="bg-darkGray p-4 rounded-lg rounded-tl-none max-w-[80%]">
-                          <p className="text-light">{activeMessage.content}</p>
-                          <p className="text-xs text-light/50 text-right mt-1">{new Date(activeMessage.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        </div>
-                      </div>
-                      
-                      {/* Example previous replies if status is 'replied' */}
-                      {activeMessage.status === 'replied' && (
-                        <div className="flex justify-end mb-4">
-                          <div className="bg-accent/20 p-4 rounded-lg rounded-tr-none max-w-[80%]">
-                            <p className="text-light">Thank you for your message. We will look into this and get back to you shortly.</p>
-                            <p className="text-xs text-light/50 text-right mt-1">Yesterday, 2:30 PM</p>
-                          </div>
-                          <div className="w-8 h-8 rounded-full bg-accent/20 text-accent flex items-center justify-center ml-2 flex-shrink-0 uppercase font-bold">
-                            A
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="border-t border-darkGray pt-4 mt-auto">
-                      <textarea
-                        className="w-full bg-darkGray border border-darkGray/50 text-light p-3 rounded min-h-[100px] mb-3"
-                        placeholder="Type your reply here..."
-                        value={messageReply}
-                        onChange={(e) => setMessageReply(e.target.value)}
-                      ></textarea>
-                      <div className="flex justify-end">
-                        <button className="bg-transparent border border-accent text-accent hover:bg-accent/10 px-4 py-2 rounded mr-2">
-                          Save Draft
-                        </button>
-                        <button className="bg-accent hover:bg-darkGold text-white px-4 py-2 rounded">
-                          Send Reply
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-light/50">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4 text-light/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                    <p className="text-xl mb-2">No message selected</p>
-                    <p>Select a conversation from the list to view messages</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Profile Edit Modal */}
-      {showProfileEdit && (
-        <ProfileEdit
-          user={user}
-          onClose={() => setShowProfileEdit(false)}
-        />
-      )}
-    </div>
-  );
-};
-
-export default AdminDashboard;
