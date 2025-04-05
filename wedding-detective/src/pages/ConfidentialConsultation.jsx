@@ -40,7 +40,7 @@ const ConfidentialConsultation = () => {
       <section className="py-16 bg-secondary border-b border-darkGray">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-serif font-bold mb-6 text-light">Confidential <span className="text-accent">Consultation</span></h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80">Secure and discreet communication with our investigation team</p>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80 single-line-text">Secure and discreet communication with our investigation team</p>
         </div>
       </section>
 

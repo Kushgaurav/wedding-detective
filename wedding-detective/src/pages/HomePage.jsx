@@ -54,8 +54,8 @@ const HomePage = () => {
             </svg>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mb-4 sm:mb-6 text-light">Trust <span className="text-accent">But</span> Verify</h2>
-          <p className="text-lg sm:text-xl mb-8 sm:mb-10 max-w-2xl mx-auto text-light/80">Professional pre-marital investigation services to ensure your peace of mind before saying "I do"</p>
-          <div className="flex flex-col xs:flex-row justify-center space-y-3 xs:space-y-0 xs:space-x-4">
+          <p className="text-lg  sm:text-xl mb-12 sm:mb-10 max-w-1xl mx-auto text-light/80 text-center whitespace-normal ">Professional pre-marital investigation services to ensure your peace of mind before saying "I do"</p>
+          <div className="  flex flex-col xs:flex-row justify-center space-y-3 xs:space-y-0 xs:space-x-4">
             <Link to="/services" className="btn-primary text-sm sm:text-base py-3 px-6">Explore Services</Link>
             <Link to="/consultation" className="btn-outline text-sm sm:text-base py-3 px-6">Confidential Consultation</Link>
           </div>
@@ -111,7 +111,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-serif font-bold mb-3 sm:mb-4 text-light">Our <span className="text-accent">Services</span></h2>
-            <p className="text-light/70 text-sm sm:text-base max-w-2xl mx-auto">Comprehensive investigation packages tailored to your specific needs</p>
+            <p className="text-light/70 text-sm sm:text-base max-w-2xl mx-auto text-center single-line-text">Comprehensive investigation packages tailored to your specific needs</p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -241,6 +241,54 @@ const HomePage = () => {
             <h3 className="text-xl sm:text-2xl font-serif font-bold mb-3 sm:mb-4 text-light">Protect Your Future</h3>
             <p className="text-light/70 mb-5 sm:mb-6 max-w-2xl mx-auto text-sm sm:text-base">Truth and transparency are the foundation of every successful marriage. Get the peace of mind you deserve.</p>
             <Link to="/services" className="btn-accent text-sm sm:text-base py-2 px-4 sm:py-3 sm:px-6">View Investigation Packages</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Details */}
+      <section className="py-10 sm:py-12 bg-primary border-t border-darkGray">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold mb-3 text-light">Contact <span className="text-accent">Us</span></h3>
+              <div className="h-1 w-20 bg-accent mx-auto"></div>
+            </div>
+            
+            <div className="bg-secondary p-6 rounded-lg shadow-lg border border-darkGray">
+              <div className="flex flex-col sm:flex-row items-center mb-4">
+                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mb-4 sm:mb-0 sm:mr-4">
+                  <svg className="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
+                  </svg>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h4 className="text-lg font-bold text-accent mb-1">Gaurav Kushwaha</h4>
+                  <p className="text-light/80 text-sm">Founder</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3 text-light/80">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <span>+91 6388850059</span>
+                </div>
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>gauravkushwaha@outlook.in</span>
+                </div>
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-accent mr-3 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Gramsabha Gate, Chaka, Naini, Prayagraj<br />Uttar Pradesh, India - 211008</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

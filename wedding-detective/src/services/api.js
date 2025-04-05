@@ -2,6 +2,7 @@
  * API service for interacting with the Wedding Detective backend
  */
 
+// Use a consistent fallback URL to ensure API works even if env variables aren't loaded
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Services API methods

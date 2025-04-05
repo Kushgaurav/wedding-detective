@@ -8,7 +8,7 @@ const VerificationProcess = () => {
       <section className="py-16 bg-secondary border-b border-darkGray">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-serif font-bold mb-6 text-light">Verification <span className="text-accent">Process</span></h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80">Our meticulous investigation methodology ensures accurate and reliable results</p>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80 single-line-text">Our meticulous investigation methodology ensures accurate and reliable results</p>
         </div>
       </section>
 
@@ -428,8 +428,8 @@ const VerificationProcess = () => {
       <section className="py-16 bg-secondary border-t border-darkGray">
         <div className="container mx-auto px-6 text-center">
           <h3 className="text-3xl font-serif font-bold mb-6 text-light">Ready to Begin Your <span className="text-accent">Investigation</span>?</h3>
-          <p className="text-light/80 mb-8 max-w-2xl mx-auto">Schedule a confidential consultation with our experts today and take the first step toward peace of mind.</p>
-          <Link to="/consultation" className="btn-primary">Request Confidential Consultation</Link>
+          <p className="text-light/80 mb-8 max-w-2xl mx-auto single-line-text">Schedule a confidential consultation with our experts today and take the first step toward peace of mind.</p>
+          <Link to="/consultation" className="btn-primary inline-block py-2 px-4 sm:py-3 sm:px-6 text-sm sm:text-base w-full sm:w-auto max-w-xs mx-auto">Request Confidential Consultation</Link>
         </div>
       </section>
     </>

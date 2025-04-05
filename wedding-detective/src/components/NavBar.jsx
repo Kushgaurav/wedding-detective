@@ -123,7 +123,7 @@ const NavBar = () => {
               {isAuthenticated ? (
                 <>
                   {/* Welcome message for logged-in users */}
-                  <li className="border-l border-darkGray/40 pl-4 ml-2">
+                  <li className="border-l border-gray-700/40 pl-4 ml-2">
                     <div className="flex items-center">
                       <div className="hidden sm:block text-right">
                         <p className="text-light">Welcome, <span className="text-accent">{user?.name || 'User'}</span></p>
@@ -132,7 +132,7 @@ const NavBar = () => {
                       <div className="relative ml-3">
                         <div 
                           ref={profileButtonRef}
-                          className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-darkGold transition-colors hover:scale-105"
+                          className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-yellow-700 transition-colors hover:scale-105"
                           onClick={toggleProfileDropdown}
                           aria-expanded={profileDropdownOpen}
                           aria-haspopup="true"
@@ -142,11 +142,11 @@ const NavBar = () => {
                         
                         {profileDropdownOpen && (
                           <div 
-                            className="fixed  z-[1] top-16 sm:top-auto right-4 sm:right-0 w-[calc(100vw-2rem)] sm:w-64 bg-secondary/95 border border-darkGray rounded-xl shadow-lg shadow-accent/10  overflow-hidden backdrop-blur-md"
+                            className="fixed z-[1] top-16 sm:top-auto right-4 sm:right-0 w-[calc(100vw-2rem)] sm:w-64 bg-gray-800/95 border border-gray-700 rounded-xl shadow-lg shadow-accent/10 overflow-hidden backdrop-blur-md"
                             ref={dropdownRef}
                           >
                             <div className="py-1">
-                              <div className="border-b border-darkGray/60 px-4 py-2">
+                              <div className="border-b border-gray-700/60 px-4 py-2">
                                 <p className="text-light font-medium">Logged in as:</p>
                                 <p className="text-accent">{user?.name || 'User'}</p>
                                 <p className="text-light/70 text-xs">{user?.email}</p>
@@ -157,7 +157,7 @@ const NavBar = () => {
                                   setShowProfileModal(true);
                                   setProfileDropdownOpen(false);
                                 }}
-                                className="block w-full text-left px-4 py-2 text-light hover:bg-primary/30 transition-colors"
+                                className="block w-full text-left px-4 py-2 text-light hover:bg-gray-900/30 transition-colors"
                               >
                                 <div className="flex items-center">
                                   <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -169,7 +169,7 @@ const NavBar = () => {
                               
                               <Link 
                                 to={user?.isAdmin ? "/admin" : "/portal"} 
-                                className="block px-4 py-2 text-light hover:bg-primary/30 w-full text-left transition-colors"
+                                className="block px-4 py-2 text-light hover:bg-gray-900/30 w-full text-left transition-colors"
                                 onClick={() => setProfileDropdownOpen(false)}
                               >
                                 <div className="flex items-center">
@@ -182,7 +182,7 @@ const NavBar = () => {
                               
                               <Link 
                                 to="/documents" 
-                                className="block px-4 py-2 text-light hover:bg-primary/30 w-full text-left transition-colors"
+                                className="block px-4 py-2 text-light hover:bg-gray-900/30 w-full text-left transition-colors"
                                 onClick={() => setProfileDropdownOpen(false)}
                               >
                                 <div className="flex items-center">
@@ -193,7 +193,7 @@ const NavBar = () => {
                                 </div>
                               </Link>
 
-                              <div className="border-t border-darkGray/60">
+                              <div className="border-t border-gray-700/60">
                                 <button
                                   onClick={handleLogout}
                                   className="block w-full text-left px-4 py-2 text-light hover:bg-red-800/30 transition-colors"

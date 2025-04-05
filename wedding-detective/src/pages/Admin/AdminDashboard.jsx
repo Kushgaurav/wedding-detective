@@ -841,7 +841,7 @@ const AdminDashboard = () => {
                       ? 'bg-accent/10 text-accent'
                       : 'text-light hover:bg-darkGray'
                   }`}
-                ></button>
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4z" />
                     <path d="M3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z" />
@@ -853,3 +853,210 @@ const AdminDashboard = () => {
               <li>
                 <button
                   onClick={() => setActiveSection('users')}
+                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
+                    activeSection === 'users'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-light hover:bg-darkGray'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.660.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                  </svg>
+                  User Management
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveSection('consultations')}
+                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
+                    activeSection === 'consultations'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-light hover:bg-darkGray'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
+                  </svg>
+                  Consultations
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveSection('services')}
+                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
+                    activeSection === 'services'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-light hover:bg-darkGray'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                  </svg>
+                  Services
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveSection('cases')}
+                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
+                    activeSection === 'cases'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-light hover:bg-darkGray'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clipRule="evenodd" />
+                    <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
+                  </svg>
+                  Cases
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveSection('payments')}
+                  className={`w-full flex items-center px-2 py-2 text-sm rounded-md ${
+                    activeSection === 'payments'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-light hover:bg-darkGray'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  Payments
+                </button>
+              </li>
+            </ul>
+          </div>
+          
+          <div className="mb-6">
+            <h3 className="text-light text-xs uppercase tracking-wider mb-3">Settings</h3>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  onClick={() => setShowProfileEdit(true)}
+                  className="w-full flex items-center px-2 py-2 text-sm rounded-md text-light hover:bg-darkGray"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                  </svg>
+                  Account Settings
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center px-2 py-2 text-sm rounded-md text-red-500 hover:bg-darkGray"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+                  </svg>
+                  Log Out
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-1 overflow-x-hidden">
+        <div className="bg-secondary p-4 border-b border-darkGray flex justify-between items-center">
+          <div className="flex items-center">
+            <button className="lg:hidden text-light mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <h1 className="text-xl text-light font-bold">
+              {activeSection === 'dashboard' && 'Dashboard Overview'}
+              {activeSection === 'users' && 'User Management'}
+              {activeSection === 'consultations' && 'Consultation Requests'}
+              {activeSection === 'services' && 'Service Management'}
+              {activeSection === 'cases' && 'Case Management'}
+              {activeSection === 'payments' && 'Payment Management'}
+            </h1>
+          </div>
+          
+          <div className="relative">
+            <button 
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center text-light"
+            >
+              <div className="bg-darkGold h-8 w-8 rounded-full flex items-center justify-center mr-2">
+                <span className="font-bold text-white">{user?.name?.charAt(0) || 'A'}</span>
+              </div>
+              <span className="mr-2 hidden sm:inline-block">{user?.name || 'Admin'}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transition-transform ${showUserMenu ? 'transform rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+            
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 py-2 bg-secondary rounded-md shadow-lg z-10 border border-darkGray">
+                <button
+                  onClick={() => {
+                    setShowProfileEdit(true);
+                    setShowUserMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-light hover:bg-darkGray"
+                >
+                  Account Settings
+                </button>
+                <div className="border-t border-darkGray my-1"></div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-red-500 hover:bg-darkGray"
+                >
+                  Log Out
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {showProfileEdit && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-secondary rounded-lg shadow-xl max-w-2xl w-full">
+              <div className="flex justify-between items-center border-b border-darkGray p-4">
+                <h2 className="text-xl font-bold text-light">Account Settings</h2>
+                <button 
+                  onClick={() => setShowProfileEdit(false)}
+                  className="text-light/50 hover:text-light"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <ProfileEdit onClose={() => setShowProfileEdit(false)} />
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div className="p-6">
+          {activeSection === 'dashboard' && <AdminOverview />}
+          {activeSection === 'users' && <UserManagement />}
+          {activeSection === 'consultations' && <ConsultationManagement />}
+          {activeSection === 'services' && (
+            <>
+              <UserManagement />
+              <ServiceManagement />
+            </>
+          )}
+          {activeSection === 'payments' && <PaymentManagement />}
+          {activeSection === 'cases' && (
+            <div className="text-center py-12">
+              <h3 className="text-xl text-light mb-2">Case Management</h3>
+              <p className="text-light/70">This section is under development.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

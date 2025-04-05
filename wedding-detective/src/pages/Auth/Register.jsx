@@ -139,20 +139,24 @@ const Register = () => {
             </div>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center mt-4">
             <input
               id="termsAgreed"
               name="termsAgreed"
               type="checkbox"
               checked={termsAgreed}
               onChange={handleChange}
-              className="h-4 w-4 text-accent focus:ring-accent border-darkGray rounded bg-secondary"
+              className={`h-4 w-4 text-accent focus:ring-accent border-darkGray rounded bg-secondary ${formErrors.termsAgreed ? 'border-red-500 ring-1 ring-red-500' : ''}`}
             />
-            <label htmlFor="termsAgreed" className="ml-2 block text-sm text-light/70">
+            <label htmlFor="termsAgreed" className={`ml-2 block text-sm ${formErrors.termsAgreed ? 'text-red-400' : 'text-light/70'}`}>
               I agree to the <Link to="/terms-of-service" className="text-accent hover:text-darkGold">Terms of Service</Link> and <Link to="/privacy-policy" className="text-accent hover:text-darkGold">Privacy Policy</Link>
             </label>
           </div>
-          {formErrors.termsAgreed && <p className="text-red-400 text-xs mt-1">{formErrors.termsAgreed}</p>}
+          {formErrors.termsAgreed && (
+            <div className="mt-2 bg-red-900/30 border border-red-500 text-red-400 text-xs px-3 py-2 rounded-md font-medium">
+              {formErrors.termsAgreed}
+            </div>
+          )}
 
           <div>
             <button

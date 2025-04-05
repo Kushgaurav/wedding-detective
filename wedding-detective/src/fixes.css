@@ -1,0 +1,471 @@
+/* Browser compatibility fixes */
+
+/* Fix for older browsers */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    .safari-fix {
+      background-clip: padding-box;
+    }
+  }
+}
+
+/* Fix for potential hover state issues on iOS */
+@media (hover: hover) {
+  .hover-effect:hover {
+    opacity: 0.8;
+  }
+}
+
+/* Reset some default margins for consistency across browsers */
+body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+/* Cross-browser scrollbar styling - using browser-specific implementations */
+/* WebKit (Safari, Chrome) specific scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-dark-gray);
+  border-radius: 4px;
+}
+
+/* Button and form element focus states */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Additional helper classes for component styling */
+.card-hover {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Fix for subtitle/tagline text being wrapped unnecessarily */
+.single-line-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+/* Text alignment & spacing fixes */
+.text-content {
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-content-container {
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.heading-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Standard spacing classes */
+.stack > * + * {
+  margin-top: 1rem;
+}
+
+.stack-sm > * + * {
+  margin-top: 0.5rem;
+}
+
+.stack-lg > * + * {
+  margin-top: 2rem;
+}
+
+.vertical-spacing > * + * {
+  margin-top: 1.5rem;
+}
+
+/* Button overrides and improvements */
+.btn,
+.btn-primary,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.375rem;
+}
+
+/* Link buttons with consistent spacing */
+a.btn-primary,
+a.btn-outline {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+/* Fix extra space on button groups */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+/* Fix font weight in buttons for better readability */
+.btn-primary, .btn-outline {
+  font-weight: 600;
+}
+
+/* Fix for dark text on gold buttons for better contrast and eye-friendliness */
+.btn-primary, 
+.btn-accent,
+.bg-accent {
+  /* Improved contrast for better readability */
+  color: #000000;
+  text-shadow: none;
+  font-weight: 600;
+}
+
+/* Add a subtle border to help define button edges better */
+.btn-primary {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Improve hover state for better feedback */
+.btn-primary:hover {
+  background-color: #c69c33; /* Slightly darker gold for better contrast */
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Fix for inconsistent padding on services page cards */
+.service-card {
+  padding: 1.5rem;
+  height: 100%;
+}
+
+/* Fix for inconsistent section margins */
+.section + .section {
+  margin-top: 2rem;
+}
+
+/* Consistent form styling */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-dark-gray);
+  color: var(--color-light);
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.form-field-spacing {
+  margin-bottom: 1.25rem;
+}
+
+/* Responsive spacing helpers */
+@media (min-width: 640px) {
+  .sm-stack > * + * {
+    margin-top: 1.5rem;
+  }
+  
+  .sm-px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  .sm-py-4 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  
+  .content-padding {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .md-stack > * + * {
+    margin-top: 2rem;
+  }
+  
+  .md-px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  
+  .md-py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  
+  .content-padding {
+    padding: 2.5rem;
+  }
+}
+
+/* Fix for card layouts and grids */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Fix for inconsistent margins in lists */
+.spaced-list > * + * {
+  margin-top: 0.75rem;
+}
+
+.aligned-list {
+  list-style-position: outside;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.aligned-list li {
+  margin-bottom: 0.5rem;
+}
+
+/* Consistent padding for containers */
+.content-padding {
+  padding: 1.5rem;
+}
+
+/* Fix for inconsistent content alignment */
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Consistent card spacing */
+.card {
+  margin-bottom: 1.5rem;
+}
+
+/* Ensure text is properly wrapped and aligned */
+.text-wrap {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Fix for nested containers and their spacing */
+.nested-container {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .nested-container {
+    padding: 1.5rem;
+  }
+}
+
+/* Improved heading and text spacing for better readability */
+@layer base {
+  /* Better heading margins with consistent spacing */
+  h1 {
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+  
+  h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.2;
+  }
+  
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  
+  h4, h5, h6 {
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+  }
+  
+  /* First heading in a section shouldn't have a top margin */
+  section > h1:first-child,
+  section > h2:first-child,
+  section > h3:first-child,
+  section > h4:first-child,
+  div.section > h1:first-child,
+  div.section > h2:first-child,
+  div.section > h3:first-child,
+  div.section > h4:first-child,
+  .card > h1:first-child,
+  .card > h2:first-child,
+  .card > h3:first-child,
+  .card > h4:first-child {
+    margin-top: 0;
+  }
+  
+  /* Better paragraph spacing */
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Fix spacing between headings and paragraphs */
+  h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p {
+    margin-top: 0.5rem;
+  }
+  
+  /* Add vertical rhythm to longer content areas */
+  .content p + p {
+    margin-top: 0.75rem;
+  }
+  
+  /* List spacing improvements */
+  ul, ol {
+    margin-top: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+  
+  li {
+    margin-bottom: 0.5rem;
+  }
+  
+  li > ul,
+  li > ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Section spacing for better content organization */
+  .section-spacing {
+    margin-bottom: 3rem;
+  }
+}
+
+/* Additional utility classes for fine-tuning spacing */
+.mb-heading {
+  margin-bottom: 1.25rem;
+}
+
+.mt-content {
+  margin-top: 1.25rem;
+}
+
+.text-container {
+  max-width: 70ch;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Improved spacing for cards and content blocks */
+.content-block {
+  margin-bottom: 2rem;
+}
+
+.content-block h2,
+.content-block h3,
+.content-block h4 {
+  margin-bottom: 0.75rem;
+}
+
+/* Fix for text alignment in containers */
+.text-aligned {
+  text-align: justify;
+  text-align-last: left;
+}
+
+@media (min-width: 768px) {
+  .text-aligned {
+    text-align: justify;
+    text-align-last: left;
+    line-height: 1.7;
+  }
+  
+  /* Increased spacing for larger screens */
+  h1 {
+    margin-bottom: 1.75rem;
+  }
+  
+  h2 {
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Fix for last elements in containers to remove extra bottom margin */
+p:last-child,
+ul:last-child,
+ol:last-child,
+blockquote:last-child {
+  margin-bottom: 0;
+}

@@ -113,8 +113,8 @@ const ProfileEdit = ({ userId = null, onClose = () => {}, isAdmin = false }) => 
   };
 
   return (
-    <div className="bg-secondary p-6 rounded shadow w-full max-w-2xl mx-auto">
-      <h2 className="text-xl font-bold text-light mb-6">
+    <div className="bg-gray-800 p-6 rounded shadow w-full max-w-2xl mx-auto">
+      <h2 className="text-xl font-bold text-white mb-6">
         {isAdmin ? 'Edit User Profile' : 'Edit Your Profile'}
       </h2>
       
@@ -129,51 +129,51 @@ const ProfileEdit = ({ userId = null, onClose = () => {}, isAdmin = false }) => 
       
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="name" className="block text-light mb-1">Full Name</label>
+          <label htmlFor="name" className="block text-white mb-1">Full Name</label>
           <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
             required
           />
         </div>
         
         <div className="mb-4">
-          <label htmlFor="email" className="block text-light mb-1">Email Address</label>
+          <label htmlFor="email" className="block text-white mb-1">Email Address</label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
             required
           />
         </div>
         
         <div className="mb-4">
-          <label htmlFor="phone" className="block text-light mb-1">Phone Number</label>
+          <label htmlFor="phone" className="block text-white mb-1">Phone Number</label>
           <input
             type="tel"
             id="phone"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
           />
         </div>
         
         <div className="mb-4">
-          <label htmlFor="address" className="block text-light mb-1">Address</label>
+          <label htmlFor="address" className="block text-white mb-1">Address</label>
           <textarea
             id="address"
             name="address"
             value={formData.address}
             onChange={handleChange}
-            className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
             rows="3"
           />
         </div>
@@ -182,49 +182,49 @@ const ProfileEdit = ({ userId = null, onClose = () => {}, isAdmin = false }) => 
           <button 
             type="button"
             onClick={handleTogglePasswordFields}
-            className="text-accent hover:text-darkGold underline"
+            className="text-yellow-600 hover:text-yellow-700 underline"
           >
             {showPasswordFields ? 'Hide Password Fields' : 'Change Password'}
           </button>
         </div>
         
         {showPasswordFields && (
-          <div className="space-y-4 mb-4 bg-darkGray/50 p-4 rounded">
+          <div className="space-y-4 mb-4 bg-gray-700/50 p-4 rounded">
             {!isAdmin && (
               <div>
-                <label htmlFor="currentPassword" className="block text-light mb-1">Current Password</label>
+                <label htmlFor="currentPassword" className="block text-white mb-1">Current Password</label>
                 <input
                   type="password"
                   id="currentPassword"
                   name="currentPassword"
                   value={formData.currentPassword}
                   onChange={handleChange}
-                  className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+                  className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
                 />
               </div>
             )}
             
             <div>
-              <label htmlFor="newPassword" className="block text-light mb-1">New Password</label>
+              <label htmlFor="newPassword" className="block text-white mb-1">New Password</label>
               <input
                 type="password"
                 id="newPassword"
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleChange}
-                className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
               />
             </div>
             
             <div>
-              <label htmlFor="confirmPassword" className="block text-light mb-1">Confirm New Password</label>
+              <label htmlFor="confirmPassword" className="block text-white mb-1">Confirm New Password</label>
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full bg-darkGray text-light p-2 rounded focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full bg-gray-700 text-white p-2 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600"
               />
             </div>
           </div>
@@ -234,14 +234,14 @@ const ProfileEdit = ({ userId = null, onClose = () => {}, isAdmin = false }) => 
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-darkGray text-light rounded hover:bg-gray-700"
+            className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
             disabled={loading}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-accent text-dark rounded hover:bg-darkGold"
+            className="px-4 py-2 bg-yellow-600 text-black rounded hover:bg-yellow-700"
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Save Changes'}

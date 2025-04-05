@@ -50,7 +50,7 @@ const ServicePage = () => {
       <section className="py-16 bg-secondary border-b border-darkGray">
         <div className="container mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl sm:text-4xl font-serif font-bold mb-4 sm:mb-6 text-light">Our <span className="text-accent">Services</span></h2>
-          <p className="text-lg sm:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto text-light/80">Comprehensive investigation packages tailored to your specific needs</p>
+          <p className="text-lg sm:text-xl mb-6 sm:mb-8 max-w-2xl mx-auto text-light/80 text-center single-line-text">Comprehensive investigation packages tailored to your specific needs</p>
         </div>
       </section>
 

@@ -8,7 +8,7 @@ const CaseStudies = () => {
       <section className="py-16 bg-secondary border-b border-darkGray">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-serif font-bold mb-6 text-light">Case <span className="text-accent">Studies</span></h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80">Anonymized success stories and threat prevention examples</p>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-light/80 single-line-text">Anonymized success stories and threat prevention examples</p>
         </div>
       </section>
 
@@ -463,7 +463,7 @@ const CaseStudies = () => {
       <section className="py-16 bg-secondary border-t border-darkGray">
         <div className="container mx-auto px-6 text-center">
           <h3 className="text-3xl font-serif font-bold mb-6 text-light">Protect Your <span className="text-accent">Future</span></h3>
-          <p className="text-light/80 mb-8 max-w-2xl mx-auto">Don't risk your emotional and financial well-being. Our discreet investigation services provide the peace of mind you deserve before making a lifelong commitment.</p>
+          <p className="text-light/80 mb-8 max-w-2xl mx-auto single-line-text">Don't risk your emotional and financial well-being. Our discreet investigation services provide the peace of mind you deserve before making a lifelong commitment.</p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link to="/consultation" className="btn-primary">Request Consultation</Link>
             <Link to="/services" className="btn-outline">View Services</Link>
